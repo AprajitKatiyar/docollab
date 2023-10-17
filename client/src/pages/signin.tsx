@@ -10,15 +10,30 @@ export default function SignIn() {
     const res = await signIn("credentials", {
       email: userName,
       password: password,
-      redirect: false,
+      redirect: true,
+      callbackUrl: "/",
     });
     console.log(res);
   };
-
+  async function handleGoogleSignin() {
+    signIn("google", { callbackUrl: "http://localhost:3000" });
+  }
+  async function onSubmit() {
+    const res = await signIn("credentials", {
+      email: userName,
+      password: password,
+      redirect: true,
+      callbackUrl: "/",
+    });
+    console.log(res);
+  }
   return (
     <div className="h-screen w-full flex">
       <div className="h-full w-full flex content-center items-center">
-        <div className="p-8 m-auto border shadow-lg h-[480px] w-[300px]">
+        <form
+          className="p-8 m-auto border shadow-lg h-[480px] w-[300px]"
+          onSubmit={onSubmit}
+        >
           <h2 className="text-4xl text-center font-bold my-4">Welcome.</h2>
           <h3 className="text text-center font-thin my-4">
             Start collaborating right away.
@@ -26,7 +41,7 @@ export default function SignIn() {
           <div className="flex justify-center ">
             <button
               className="flex justify-center items-center border shadow-md  p-2 w-80 mr-4 rounded-sm hover:shadow-lg"
-              onClick={() => signIn("google")}
+              onClick={handleGoogleSignin}
             >
               <FcGoogle className="mr-2" /> Google
             </button>
@@ -54,7 +69,7 @@ export default function SignIn() {
           </div>
           <button
             className="w-full border bg-indigo-600 text-white rounded-md p-2 hover:bg-indigo-400"
-            onClick={handleOnClick}
+            type="submit"
           >
             SignIn
           </button>
@@ -65,7 +80,7 @@ export default function SignIn() {
               Sign Up
             </a>
           </p>
-        </div>
+        </form>
       </div>
     </div>
   );
