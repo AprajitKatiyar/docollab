@@ -15,13 +15,4 @@ model User {
   username String  @unique
   password String
   name     String?
-  docs     Doc[]
-}
-
-model Doc {
-  id       Int     @id @default(autoincrement())
-  title    String
-  content  String?
-  author   User    @relation(fields: [authorId], references: [id])
-  authorId Int
 }
