@@ -12,28 +12,91 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.NEXT_GOOGLE_CLIENT_SECRET as string,
     }),
     CredentialsProvider({
-      type: "credentials",
+      id: "login",
       credentials: {},
-      authorize(credentials) {
+      async authorize(credentials) {
         const { email, password } = credentials as {
           email: string;
           password: string;
         };
-        if (email !== "john@gmail.com" || password !== "1234") {
-          throw new Error("invalid credentials");
+        try {
+          const response = await fetch("http://localhost:3001/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
+              email: email,
+              password: password,
+            }),
+            headers: { "Content-Type": "application/json" },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            return {
+              ...data.user,
+              image: "",
+            };
+          } else {
+            throw new Error("Error during login");
+          }
+        } catch (error) {
+          throw new Error("Error during login");
         }
-        console.log("yesss");
-        // if everything is fine
-        return {
-          id: "1234",
-          name: "John Doe",
-          email: "john@gmail.com",
-          role: "admin",
+      },
+    }),
+    CredentialsProvider({
+      id: "signup",
+      credentials: {},
+      async authorize(credentials) {
+        const { email, password, name } = credentials as {
+          email: string;
+          password: string;
+          name: string;
         };
+        try {
+          const response = await fetch("http://localhost:3001/auth/signup", {
+            method: "POST",
+            body: JSON.stringify({
+              email: email,
+              password: password,
+              name: name,
+            }),
+            headers: { "Content-Type": "application/json" },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            return {
+              ...data.user,
+              image: "",
+            };
+          } else {
+            throw new Error("Error during signup");
+          }
+        } catch (error) {
+          throw new Error("Error during signup");
+        }
       },
     }),
     // ...add more providers here
   ] as Provider[],
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      try {
+        const response = await fetch(
+          "http://localhost:3001/auth/saveOauthUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              email: user.email,
+              name: user.name,
+            }),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+  },
   pages: {
     signIn: "/auth/signin",
   },
