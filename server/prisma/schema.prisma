@@ -11,10 +11,54 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String          @id @default(uuid())
+  email     String          @unique
   password  String?
   name      String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  projects  ProjectsUsers[]
+}
+
+model Project {
+  id          String          @id @default(uuid())
+  name        String
+  isShareable Boolean
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  docs        Doc[]
+  flows       Flow[]
+  users       ProjectsUsers[]
+}
+
+model ProjectsUsers {
+  User      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  isOwner   Boolean
+
+  @@id([userId, projectId])
+}
+
+model Doc {
+  id        String   @id @default(uuid())
+  name      String?
+  order     Int
+  data      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+}
+
+model Flow {
+  id        String   @id @default(uuid())
+  name      String?
+  order     Int
+  data      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
 }

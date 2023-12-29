@@ -1,11 +1,16 @@
 import express from "express";
-const app = express();
-const port = 3001;
+import http from "http";
 import cors from "cors";
 import prisma from "../prisma/client";
+import { IoManager } from "./managers/IoManager";
+import { FlowManager } from "./managers/FlowManager";
 
+const app = express();
+const port = 3001;
 app.use(cors());
 app.use(express.json());
+
+const httpServer = http.createServer(app);
 
 app.get("/", (req, res) => {
   res.send("Hello from backend server");
@@ -86,6 +91,13 @@ app.post("/auth/saveOauthUser", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Backend server is up and running at http://localhost:${port}`);
+});
+export default httpServer;
+const io = IoManager.getIo();
+const flowManager = new FlowManager();
+io.on("connection", (socket) => {
+  console.log("New Connection");
+  flowManager.addFlowHandlers(socket);
 });
