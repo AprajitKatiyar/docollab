@@ -90,6 +90,33 @@ app.post("/auth/saveOauthUser", async (req, res) => {
     });
   }
 });
+app.post("/projects/createProject", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const project = await prisma.project.create({
+      data: {
+        users: {
+          create: [
+            {
+              userId: userId,
+              isOwner: true,
+            },
+          ],
+        },
+      },
+    });
+    if (project)
+      res.json({
+        message: "Project created successfully",
+        project: project,
+      });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
 
 httpServer.listen(port, () => {
   console.log(`Backend server is up and running at http://localhost:${port}`);
