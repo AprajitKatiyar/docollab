@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
+import { useRouter } from "next/router";
+
 export default function Home() {
+  const router = useRouter();
+  const handleOnClick = () => {
+    router.push("/projects/create");
+  };
   return (
     <div className="h-screen w-full relative">
       <div className="absolute h-full w-full grid grid-cols-2">
@@ -26,7 +32,10 @@ export default function Home() {
         <h1 className="select-none text-6xl font-extrabold mr-2">. </h1>
       </div>
       <div className="absolute m-auto w-full top-[500px] flex justify-center">
-        <button className="border border-gray-400 rounded-full p-4">
+        <button
+          className="border border-gray-400 rounded-full p-4"
+          onClick={handleOnClick}
+        >
           <FaArrowRight size="40" strokeWidth="2" color="#8F48EB" />
         </button>
       </div>
