@@ -3,9 +3,12 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
 import { MdOutlineSubject } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
+import { useSession } from "next-auth/react";
 
-export default function AppBar({ session }: any) {
-    console.log("aa",session);
+export default function AppBar() {
+  const session = useSession();
+  const data = session.data;
+  console.log("aa", session);
   return (
     <div className="flex justify-between p-4">
       <div className="flex justify-start items-center">
@@ -13,17 +16,17 @@ export default function AppBar({ session }: any) {
         <h1 className="text-xl font-extrabold ml-2 select-none">Do.Collab.</h1>
       </div>
       <div className="flex justify-end">
-        {session && (
+        {data && (
           <button className="flex justify-center items-center border-collapse">
             <h1 className="font-extrabold">Hi</h1>
             <h1 className="font-extrabold bg-clip-text bg-[#8F48EB] text-transparent mr-1">
               ,{" "}
             </h1>
-            <h1 className="font-extrabold">Aprajit</h1>
+            <h1 className="font-extrabold">{data.user?.name?.split(" ")[0]}</h1>
             <IoMdArrowDropdown size="25" color="#8F48EB" />
           </button>
         )}
-        {!session && (
+        {!data && (
           <div className="flex">
             <button className="mr-3 border-collapse text-lg font-bold">
               Login
@@ -36,23 +39,4 @@ export default function AppBar({ session }: any) {
       </div>
     </div>
   );
-}
-
-export async function getServerSideProps(context: any) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      session,
-    },
-  };
 }
