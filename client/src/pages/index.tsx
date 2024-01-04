@@ -8,7 +8,7 @@ export default function Home() {
     router.push("/projects/create");
   };
   return (
-    <div className="h-screen w-full relative">
+    <div className="h-full w-full relative">
       <div className="absolute h-full w-full grid grid-cols-2">
         <div className="bg-gray-100" />
         <div className="relative">

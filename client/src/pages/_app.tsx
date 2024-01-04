@@ -6,8 +6,12 @@ import AppBar from "@/components/AppBar";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider session={pageProps.session}>
-      <AppBar />
-      <Component {...pageProps} />
+      <div className="flex flex-col h-screen">
+        <AppBar />
+        <div className="flex-1 overflow-y-auto ">
+          <Component {...pageProps} />
+        </div>
+      </div>
     </SessionProvider>
   );
 }

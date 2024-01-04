@@ -8,7 +8,7 @@ export default function Create() {
   };
 
   return (
-    <div className="h-screen w-full realtive">
+    <div className="h-full w-full realtive">
       <div className="flex justify-center items-center w-full h-64 absolute bg-gray-100">
         <div>
           <div
