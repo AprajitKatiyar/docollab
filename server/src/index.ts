@@ -73,7 +73,7 @@ app.post("/auth/saveOauthUser", async (req, res) => {
       },
     });
     if (user) {
-      res.status(403).json({ message: "User already exists" });
+      res.status(403).json({ message: "User already exists", user: user });
     } else {
       const newUser = await prisma.user.create({
         data: {
@@ -82,6 +82,26 @@ app.post("/auth/saveOauthUser", async (req, res) => {
         },
       });
       res.json({ message: "Saved Oauth user successfully", user: newUser });
+    }
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
+app.get("/users/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const user = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (user) {
+      res.json({ message: "User found", user: user });
+    } else {
+      res.status(403).json({ message: "User not found" });
     }
   } catch (error: any) {
     console.log(error.message);

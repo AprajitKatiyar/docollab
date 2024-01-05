@@ -13,7 +13,7 @@ export default function AppBar() {
     signOut();
   };
   const handleCreate = () => {};
-  console.log("aa", session);
+
   return (
     <div className="flex justify-between p-4  z-50 w-full">
       <div className="flex justify-start items-center">

@@ -1,8 +1,38 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { useRouter } from "next/router";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./api/auth/[...nextauth]";
+import { useSetRecoilState } from "recoil";
+import { userState } from "@/recoil/atoms/user";
 
-export default function Home() {
+interface UserData {
+  message: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  };
+}
+
+export default function Home({ data }: { data?: UserData }) {
+  console.log("data : ", data);
+  const setUserState = useSetRecoilState(userState);
+  useEffect(() => {
+    if (data) {
+      console.log("yes");
+      setUserState((old) => {
+        console.log("old:", old);
+        return {
+          ...old,
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name,
+        };
+      });
+    }
+  }, []);
+
   const router = useRouter();
   const handleOnClick = () => {
     router.push("/projects/create");
@@ -59,4 +89,30 @@ export default function Home() {
       </div>
     </div>
   );
+}
+export async function getServerSideProps(context: any) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+  var user;
+  if (session) {
+    user = session.user;
+  } else
+    return {
+      props: {
+        data: null,
+      },
+    };
+  try {
+    const response = await fetch("http://localhost:3001/users/" + user?.email, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+    return {
+      props: {
+        data,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+  }
 }

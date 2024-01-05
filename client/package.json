@@ -14,7 +14,8 @@
     "next-auth": "^4.23.2",
     "react": "latest",
     "react-dom": "latest",
-    "react-icons": "^4.12.0"
+    "react-icons": "^4.12.0",
+    "recoil": "^0.7.7"
   },
   "devDependencies": {
     "@types/node": "latest",

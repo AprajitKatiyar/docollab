@@ -1,7 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import { Provider } from "next-auth/providers";
 import CredentialsProvider from "next-auth/providers/credentials";
-
 import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
@@ -30,6 +29,7 @@ export const authOptions: NextAuthOptions = {
           });
           if (response.ok) {
             const data = await response.json();
+
             return {
               ...data.user,
               image: "",
@@ -63,6 +63,7 @@ export const authOptions: NextAuthOptions = {
           });
           if (response.ok) {
             const data = await response.json();
+
             return {
               ...data.user,
               image: "",
@@ -91,6 +92,8 @@ export const authOptions: NextAuthOptions = {
             headers: { "Content-Type": "application/json" },
           }
         );
+        const data = await response.json();
+        console.log("OAuth user: ", data.user);
         return true;
       } catch (error) {
         return false;
