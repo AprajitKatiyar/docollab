@@ -3,16 +3,33 @@ import { useRouter } from "next/router";
 import { IoMdAdd } from "react-icons/io";
 import { useRecoilValue } from "recoil";
 import { userState } from "@/recoil/atoms/user";
+import { User } from "@/recoil/atoms/user";
 export default function Create() {
-  const user = useRecoilValue(userState);
+  const user: User = useRecoilValue(userState);
   useEffect(() => {
     console.log("Saefwsef");
     console.log("user:", user);
   }, []);
 
   const router = useRouter();
-  const handleOnClick = () => {
-    //router.push();
+  const handleOnClick = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/projects/createProject",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            userId: user.id,
+          }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const data = await response.json();
+      const project = data.project;
+      router.push(`/projects/${project.id}`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
