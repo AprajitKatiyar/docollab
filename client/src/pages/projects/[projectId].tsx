@@ -1,8 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import AddNewSlide from "@/components/AddNewSlide";
 import { type } from "os";
+import dynamic from "next/dynamic";
+import "quill/dist/quill.snow.css";
 
+import QuillEditor from "@/components/QuillEditor";
 enum SlideType {
   "Doc",
   "Flow",
@@ -86,8 +89,29 @@ const slides: Slide[] = [
     data: "casecse",
   },
 ];
+const toolbarOptions = [
+  ["bold", "italic", "underline", "strike"], // toggled buttons
+  ["blockquote", "code-block"],
+
+  [{ header: 1 }, { header: 2 }], // custom button values
+  [{ list: "ordered" }, { list: "bullet" }],
+  [{ script: "sub" }, { script: "super" }], // superscript/subscript
+  [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+  [{ direction: "rtl" }], // text direction
+
+  [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+  [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+  [{ font: [] }],
+  [{ align: [] }],
+
+  ["clean"], // remove formatting button
+];
 export default function ProjectPage({ projectId }: any) {
+  console.log(projectId);
   const [selectedItem, setSelectedItem] = useState<Slide>(slides[0]);
+
   console.log(selectedItem);
   return (
     <div className="h-full w-full grid grid-cols-8">
@@ -95,7 +119,7 @@ export default function ProjectPage({ projectId }: any) {
         {slides.map((item) => (
           <div
             className={`w-full h-40 mb-4 border-2 rounded-lg hover:border-4 
-            ${selectedItem.id === item.id ? "border-[#8F48EB] " : ""}
+            ${selectedItem.id === item.id ? "border-[#8F48EB] border-4 " : ""}
             ${selectedItem.id !== item.id ? "hover:border-gray-300 " : ""}`}
             key={item.id}
             onClick={() => {
@@ -103,6 +127,9 @@ export default function ProjectPage({ projectId }: any) {
             }}
           ></div>
         ))}
+      </div>
+      <div className="col-span-7 h-full overflow-y-auto">
+        <QuillEditor />
       </div>
     </div>
   );
