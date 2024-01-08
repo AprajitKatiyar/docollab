@@ -1,10 +1,10 @@
 import { Socket } from "socket.io";
-export class FlowManager {
-  public addFlowHandlers(socket: Socket, projectId: string) {
+export class DocManager {
+  public addDocHandlers(socket: Socket, projectId: string) {
     this.createHandlers(socket, projectId);
   }
   private createHandlers(socket: Socket, projectId: string) {
-    socket.on("flow", (data) => {
+    socket.on("test1", (data) => {
       socket.emit("test", "received");
       console.log(data);
     });

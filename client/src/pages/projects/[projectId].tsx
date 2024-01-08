@@ -4,6 +4,7 @@ import AddNewSlide from "@/components/AddNewSlide";
 import { type } from "os";
 import dynamic from "next/dynamic";
 import "quill/dist/quill.snow.css";
+import { io } from "socket.io-client";
 
 import QuillEditor from "@/components/QuillEditor";
 enum SlideType {
@@ -111,6 +112,12 @@ const toolbarOptions = [
 export default function ProjectPage({ projectId }: any) {
   console.log(projectId);
   const [selectedItem, setSelectedItem] = useState<Slide>(slides[0]);
+  const [socket, setSocket] = useState<any | null>(null);
+  useEffect(() => {
+    const socket = io("http://localhost:3001");
+    setSocket(socket);
+    
+  }, []);
 
   console.log(selectedItem);
   return (

@@ -4,6 +4,7 @@ import cors from "cors";
 import prisma from "../prisma/client";
 import { IoManager } from "./managers/IoManager";
 import { FlowManager } from "./managers/FlowManager";
+import { DocManager } from "./managers/DocManager";
 
 const app = express();
 const port = 3001;
@@ -144,7 +145,17 @@ httpServer.listen(port, () => {
 export default httpServer;
 const io = IoManager.getIo();
 const flowManager = new FlowManager();
+const docManager = new DocManager();
 io.on("connection", (socket) => {
   console.log("New Connection");
-  flowManager.addFlowHandlers(socket);
+  let projectId: string = "";
+  socket.on("joinProject", (receivedProjectId) => {
+    socket.join(receivedProjectId);
+    projectId = receivedProjectId;
+    console.log(`Socket ${socket.id} joined project ${projectId}`);
+
+    //register event handlers
+    flowManager.addFlowHandlers(socket, projectId);
+    docManager.addDocHandlers(socket, projectId);
+  });
 });
