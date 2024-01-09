@@ -19,7 +19,7 @@ const toolbarOptions = [
 
   ["clean"], // remove formatting button
 ];
-const QuillEditor = () => {
+const QuillEditor = ({ socket }: { socket: any }) => {
   const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,13 +32,18 @@ const QuillEditor = () => {
         });
 
         console.log("Quill instance:", quill);
-
+        console.log("socket instance", socket);
         quill.on("text-change", (delta, oldDelta, source) => {
-          console.log("Editor content changed:", quill.root.innerHTML);
+          if (source !== "user") return;
+          socket.emit("doc-changes", delta);
+          console.log("Delta", delta);
+        });
+        socket?.on("receive-doc-changes", (delta: any) => {
+          quill.updateContents(delta);
         });
       });
     }
-  }, []);
+  }, [socket]);
 
   return <div ref={editorRef} className="h-full " />;
 };

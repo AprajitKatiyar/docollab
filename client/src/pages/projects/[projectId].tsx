@@ -116,7 +116,7 @@ export default function ProjectPage({ projectId }: any) {
   useEffect(() => {
     const socket = io("http://localhost:3001");
     setSocket(socket);
-    
+    socket.emit("joinProject", projectId);
   }, []);
 
   console.log(selectedItem);
@@ -136,7 +136,7 @@ export default function ProjectPage({ projectId }: any) {
         ))}
       </div>
       <div className="col-span-7 h-full overflow-y-auto">
-        <QuillEditor />
+        <QuillEditor socket={socket} />
       </div>
     </div>
   );

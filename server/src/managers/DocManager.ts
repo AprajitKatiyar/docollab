@@ -4,8 +4,9 @@ export class DocManager {
     this.createHandlers(socket, projectId);
   }
   private createHandlers(socket: Socket, projectId: string) {
-    socket.on("test1", (data) => {
-      socket.emit("test", "received");
+    socket.on("doc-changes", (data) => {
+      console.log("received");
+      socket.to(projectId).emit("receive-doc-changes", data);
       console.log(data);
     });
   }
