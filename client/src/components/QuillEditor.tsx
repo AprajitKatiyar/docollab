@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Quill } from "react-quill";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -21,6 +22,7 @@ const toolbarOptions = [
 ];
 const QuillEditor = ({ socket }: { socket: any }) => {
   const editorRef = useRef<HTMLDivElement>(null);
+  const [quill, setQuill] = useState<any>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -30,20 +32,38 @@ const QuillEditor = ({ socket }: { socket: any }) => {
           placeholder: "Write something...",
           modules: { toolbar: toolbarOptions },
         });
-
+        setQuill(quill);
         console.log("Quill instance:", quill);
-        console.log("socket instance", socket);
-        quill.on("text-change", (delta, oldDelta, source) => {
-          if (source !== "user") return;
-          socket.emit("doc-changes", delta);
-          console.log("Delta", delta);
-        });
-        socket?.on("receive-doc-changes", (delta: any) => {
-          quill.updateContents(delta);
-        });
       });
     }
-  }, [socket]);
+  }, []);
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+
+    const handleChange = (delta: any, oldDelta: any, source: any) => {
+      if (source !== "user") return;
+      socket.emit("doc-changes", delta);
+      console.log("Delta", delta);
+    };
+
+    quill && quill.on("text-change", handleChange);
+    return () => {
+      quill && quill.off("text-change", handleChange);
+    };
+  }, [quill, socket]);
+
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+
+    const handleChange = (delta: any) => {
+      quill.updateContents(delta);
+    };
+    socket && socket?.on("receive-doc-changes", handleChange);
+
+    return () => {
+      socket && socket.off("receive-doc-changes", handleChange);
+    };
+  }, [quill, socket]);
 
   return <div ref={editorRef} className="h-full " />;
 };
