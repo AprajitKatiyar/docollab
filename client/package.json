@@ -16,6 +16,7 @@
     "react-dom": "latest",
     "react-icons": "^4.12.0",
     "react-quill": "^2.0.0",
+    "reactflow": "^11.10.1",
     "recoil": "^0.7.7",
     "socket.io-client": "^4.7.3"
   },

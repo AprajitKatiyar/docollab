@@ -7,6 +7,7 @@ import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 
 import QuillEditor from "@/components/QuillEditor";
+import ReactFlowEditor from "@/components/ReactFlowEditor";
 enum SlideType {
   "Doc",
   "Flow",
@@ -29,7 +30,7 @@ const slides: Slide[] = [
   {
     id: "2",
     name: "First",
-    type: SlideType.Doc,
+    type: SlideType.Flow,
     order: 2,
     data: "ydtjtyj",
   },
@@ -43,7 +44,7 @@ const slides: Slide[] = [
   {
     id: "4",
     name: "First",
-    type: SlideType.Doc,
+    type: SlideType.Flow,
     order: 4,
     data: "tyjtyj",
   },
@@ -57,7 +58,7 @@ const slides: Slide[] = [
   {
     id: "6",
     name: "First",
-    type: SlideType.Doc,
+    type: SlideType.Flow,
     order: 6,
     data: "tdyjtdy",
   },
@@ -136,7 +137,10 @@ export default function ProjectPage({ projectId }: any) {
         ))}
       </div>
       <div className="col-span-7 h-full overflow-y-auto">
-        <QuillEditor socket={socket} />
+        {selectedItem.type == SlideType.Doc && <QuillEditor socket={socket} />}
+        {selectedItem.type == SlideType.Flow && (
+          <ReactFlowEditor socket={socket} />
+        )}
       </div>
     </div>
   );
