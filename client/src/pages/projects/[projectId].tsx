@@ -136,12 +136,16 @@ export default function ProjectPage({ projectId }: any) {
           ></div>
         ))}
       </div>
-      <div className="col-span-7 h-full overflow-y-auto">
-        {selectedItem.type == SlideType.Doc && <QuillEditor socket={socket} />}
-        {selectedItem.type == SlideType.Flow && (
+      {selectedItem.type == SlideType.Doc && (
+        <div className="col-span-7 h-full overflow-y-auto">
+          <QuillEditor socket={socket} />
+        </div>
+      )}
+      {selectedItem.type == SlideType.Flow && (
+        <div className="col-span-7 h-full overflow-y-auto">
           <ReactFlowEditor socket={socket} />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
