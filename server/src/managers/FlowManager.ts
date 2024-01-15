@@ -24,5 +24,10 @@ export class FlowManager {
       socket.to(projectId).emit("receive-newnode-changes", data);
       console.log(data);
     });
+    socket.on("nodelabel-changes", (id, newLabel) => {
+      console.log("Node label received");
+      socket.to(projectId).emit("receive-nodelabel-changes", id, newLabel);
+      console.log(id, " ", newLabel);
+    });
   }
 }
