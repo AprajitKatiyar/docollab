@@ -13,6 +13,9 @@ import ReactFlow, {
   applyEdgeChanges,
   useReactFlow,
   Panel,
+  OnNodesChange,
+  OnEdgesChange,
+  OnConnect,
 } from "reactflow";
 import "reactflow/dist/style.css";
 const initialNodes = [
@@ -64,21 +67,27 @@ function Flow({ socket }: { socket: any }) {
     };
   }, [socket]);
 
-  const onNodesChange = (changes: any) => {
-    setNodes((oldNodes) => applyNodeChanges(changes, oldNodes));
-    if (socket != null) {
-      socket.emit("node-changes", changes);
-    }
-    console.log("Node changes", changes);
-  };
-  const onEdgesChange = (changes: any) => {
-    setEdges((oldEdges) => applyEdgeChanges(changes, oldEdges));
-    if (socket != null) {
-      socket.emit("edge-changes", changes);
-    }
-    console.log("Edge changes", changes);
-  };
-  const onConnect = useCallback(
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes: any) => {
+      setNodes((oldNodes) => applyNodeChanges(changes, oldNodes));
+      if (socket != null) {
+        socket.emit("node-changes", changes);
+      }
+      console.log("Node changes", changes);
+    },
+    [setNodes]
+  );
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes: any) => {
+      setEdges((oldEdges) => applyEdgeChanges(changes, oldEdges));
+      if (socket != null) {
+        socket.emit("edge-changes", changes);
+      }
+      console.log("Edge changes", changes);
+    },
+    [setEdges]
+  );
+  const onConnect: OnConnect = useCallback(
     (changes: any) => {
       setEdges((oldEdges) => addEdge(changes, oldEdges));
       if (socket != null) {
