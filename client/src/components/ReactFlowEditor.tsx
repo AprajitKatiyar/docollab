@@ -128,7 +128,6 @@ function Flow({ socket }: { socket: any }) {
     [setNodes]
   );
   const updateLabel = ({ id, newLabel }: any) => {
-    //console.log(`Node ${id} label is updated with ${newLabel}`);
     udpateNodes(id, newLabel);
     if (socket && socket.connected) {
       socket.emit("nodelabel-changes", id, newLabel);
