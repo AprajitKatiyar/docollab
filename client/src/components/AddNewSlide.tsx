@@ -48,9 +48,9 @@ export default function AddNewSlide({
           <IoMdArrowDropdown />
         </button>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end absolute z-50">
         <div
-          className={`w-40  rounded-sm border shadow-md ${
+          className={`w-40  rounded-sm border shadow-md bg-white ${
             isDown ? "block" : "hidden"
           }`}
         >

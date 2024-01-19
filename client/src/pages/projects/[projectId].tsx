@@ -123,6 +123,9 @@ export default function ProjectPage({ projectId }: any) {
   console.log(selectedItem);
   return (
     <div className="h-full w-full grid grid-cols-8">
+      <div className="col-span-8 flex justify-between p-1 bg-gray-100 ">
+        <AddNewSlide />
+      </div>
       <div className="col-span-1 w-full p-4 overflow-y-auto">
         {slides.map((item) => (
           <div
