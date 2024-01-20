@@ -48,8 +48,8 @@ model Doc {
   data      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId String?
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
 }
 
 model Flow {
@@ -59,6 +59,6 @@ model Flow {
   data      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId String?
+  Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
 }

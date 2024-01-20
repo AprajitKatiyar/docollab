@@ -8,6 +8,7 @@ import { io } from "socket.io-client";
 
 import QuillEditor from "@/components/QuillEditor";
 import ReactFlowEditor from "@/components/ReactFlowEditor";
+import { stringify } from "querystring";
 enum SlideType {
   "Doc",
   "Flow",
@@ -19,7 +20,7 @@ interface Slide {
   order: number;
   data: string;
 }
-const slides: Slide[] = [
+const fetchedSlides: Slide[] = [
   {
     id: "1",
     name: "First",
@@ -33,62 +34,6 @@ const slides: Slide[] = [
     type: SlideType.Flow,
     order: 2,
     data: "ydtjtyj",
-  },
-  {
-    id: "3",
-    name: "First",
-    type: SlideType.Doc,
-    order: 3,
-    data: "vzzxcv",
-  },
-  {
-    id: "4",
-    name: "First",
-    type: SlideType.Flow,
-    order: 4,
-    data: "tyjtyj",
-  },
-  {
-    id: "5",
-    name: "First",
-    type: SlideType.Doc,
-    order: 5,
-    data: "vsdvzv",
-  },
-  {
-    id: "6",
-    name: "First",
-    type: SlideType.Flow,
-    order: 6,
-    data: "tdyjtdy",
-  },
-  {
-    id: "7",
-    name: "First",
-    type: SlideType.Doc,
-    order: 7,
-    data: "ersgergh",
-  },
-  {
-    id: "8",
-    name: "First",
-    type: SlideType.Doc,
-    order: 8,
-    data: "sdvsdv",
-  },
-  {
-    id: "9",
-    name: "First",
-    type: SlideType.Doc,
-    order: 9,
-    data: "dsvsdv",
-  },
-  {
-    id: "10",
-    name: "First",
-    type: SlideType.Doc,
-    order: 10,
-    data: "casecse",
   },
 ];
 const toolbarOptions = [
@@ -112,6 +57,7 @@ const toolbarOptions = [
 ];
 export default function ProjectPage({ projectId }: any) {
   console.log(projectId);
+  const [slides, setSlides] = useState<Slide[]>(fetchedSlides);
   const [selectedItem, setSelectedItem] = useState<Slide>(slides[0]);
   const [socket, setSocket] = useState<any | null>(null);
   useEffect(() => {
@@ -122,33 +68,94 @@ export default function ProjectPage({ projectId }: any) {
 
   console.log(selectedItem);
   return (
-    <div className="h-full w-full grid grid-cols-8">
-      <div className="col-span-8 flex justify-between p-1 bg-gray-100 ">
-        <AddNewSlide />
+    <div className="h-full w-full flex flex-col">
+      <div className="flex justify-between p-2 bg-gray-100 h-30">
+        <div className="w-40">
+          <AddNewSlide
+            handleNewDoc={async () => {
+              try {
+                const response = await fetch(
+                  "http://localhost:3001/projects/createDoc",
+                  {
+                    method: "POST",
+                    body: JSON.stringify({
+                      projectId: projectId,
+                      order: slides.length + 1,
+                      data: "",
+                    }),
+                    headers: { "Content-Type": "application/json" },
+                  }
+                );
+                const data = await response.json();
+                const doc = data.doc;
+                const newDocSlide: Slide = {
+                  id: doc.id,
+                  name: doc.name,
+                  type: SlideType.Doc,
+                  order: doc.order,
+                  data: doc.data,
+                };
+                setSlides((oldSlides) => [...oldSlides, newDocSlide]);
+              } catch (error) {
+                console.log(error);
+              }
+            }}
+            handleNewFlow={async () => {
+              try {
+                const response = await fetch(
+                  "http://localhost:3001/projects/createFlow",
+                  {
+                    method: "POST",
+                    body: JSON.stringify({
+                      projectId: projectId,
+                      order: slides.length + 1,
+                      data: "",
+                    }),
+                    headers: { "Content-Type": "application/json" },
+                  }
+                );
+                const data = await response.json();
+                const flow = data.flow;
+                const newFlowSlide: Slide = {
+                  id: flow.id,
+                  name: flow.name,
+                  type: SlideType.Flow,
+                  order: flow.order,
+                  data: flow.data,
+                };
+                setSlides((oldSlides) => [...oldSlides, newFlowSlide]);
+              } catch (error) {
+                console.log(error);
+              }
+            }}
+          />
+        </div>
       </div>
-      <div className="col-span-1 w-full p-4 overflow-y-auto">
-        {slides.map((item) => (
-          <div
-            className={`w-full h-40 mb-4 border-2 rounded-lg hover:border-4 
+      <div className="h-full w-full grid grid-cols-8">
+        <div className="col-span-1 w-full p-4 overflow-y-auto">
+          {slides.map((item) => (
+            <div
+              className={`w-full h-40 mb-4 border-2 rounded-lg hover:border-4 
             ${selectedItem.id === item.id ? "border-[#8F48EB] border-4 " : ""}
             ${selectedItem.id !== item.id ? "hover:border-gray-300 " : ""}`}
-            key={item.id}
-            onClick={() => {
-              setSelectedItem(item);
-            }}
-          ></div>
-        ))}
+              key={item.id}
+              onClick={() => {
+                setSelectedItem(item);
+              }}
+            ></div>
+          ))}
+        </div>
+        {selectedItem.type == SlideType.Doc && (
+          <div className="col-span-7 h-full ">
+            <QuillEditor socket={socket} />
+          </div>
+        )}
+        {selectedItem.type == SlideType.Flow && (
+          <div className="col-span-7 h-full ">
+            <ReactFlowEditor socket={socket} />
+          </div>
+        )}
       </div>
-      {selectedItem.type == SlideType.Doc && (
-        <div className="col-span-7 h-full overflow-y-auto">
-          <QuillEditor socket={socket} />
-        </div>
-      )}
-      {selectedItem.type == SlideType.Flow && (
-        <div className="col-span-7 h-full overflow-y-auto">
-          <ReactFlowEditor socket={socket} />
-        </div>
-      )}
     </div>
   );
 }

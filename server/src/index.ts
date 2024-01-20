@@ -138,6 +138,50 @@ app.post("/projects/createProject", async (req, res) => {
     });
   }
 });
+app.post("/projects/createDoc", async (req, res) => {
+  try {
+    const { projectId, order, data } = req.body;
+    const doc = await prisma.doc.create({
+      data: {
+        projectId: projectId,
+        order: order,
+        data: data,
+      },
+    });
+    if (doc)
+      res.json({
+        message: "Doc created successfully",
+        doc: doc,
+      });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
+app.post("/projects/createFlow", async (req, res) => {
+  try {
+    const { projectId, order, data } = req.body;
+    const flow = await prisma.flow.create({
+      data: {
+        projectId: projectId,
+        order: order,
+        data: data,
+      },
+    });
+    if (flow)
+      res.json({
+        message: "Flow created successfully",
+        flow: flow,
+      });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
 
 httpServer.listen(port, () => {
   console.log(`Backend server is up and running at http://localhost:${port}`);
