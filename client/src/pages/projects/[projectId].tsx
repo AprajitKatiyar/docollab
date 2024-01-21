@@ -56,7 +56,7 @@ const toolbarOptions = [
   ["clean"], // remove formatting button
 ];
 export default function ProjectPage({ projectId }: any) {
-  console.log(projectId);
+  //console.log(projectId);
   const [slides, setSlides] = useState<Slide[]>(fetchedSlides);
   const [selectedItem, setSelectedItem] = useState<Slide>(slides[0]);
   const [socket, setSocket] = useState<any | null>(null);
@@ -147,12 +147,12 @@ export default function ProjectPage({ projectId }: any) {
         </div>
         {selectedItem.type == SlideType.Doc && (
           <div className="col-span-7 h-full ">
-            <QuillEditor socket={socket} />
+            <QuillEditor socket={socket} docId={selectedItem.id} />
           </div>
         )}
         {selectedItem.type == SlideType.Flow && (
           <div className="col-span-7 h-full ">
-            <ReactFlowEditor socket={socket} />
+            <ReactFlowEditor socket={socket} flowId={selectedItem.id} />
           </div>
         )}
       </div>

@@ -25,7 +25,7 @@ const initialNodes = [
 const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
 const getNodeId = () => `randomnode_${+new Date()}`;
 
-function Flow({ socket }: { socket: any }) {
+function Flow({ socket, flowId }: { socket: any; flowId: string }) {
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState(initialEdges);
   const [rfInstance, setRfInstance] = useState<any | null>(null);
@@ -188,10 +188,10 @@ function Flow({ socket }: { socket: any }) {
     </ReactFlow>
   );
 }
-function ReactFlowEditor({ socket }: { socket: any }) {
+function ReactFlowEditor({ socket, flowId }: { socket: any; flowId: string }) {
   return (
     <ReactFlowProvider>
-      <Flow socket={socket} />
+      <Flow socket={socket} flowId={flowId} />
     </ReactFlowProvider>
   );
 }
