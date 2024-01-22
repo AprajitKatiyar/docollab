@@ -18,6 +18,7 @@ import ReactFlow, {
   OnConnect,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { debounce } from "lodash";
 const initialNodes = [
   { id: "1", position: { x: 300, y: 200 }, data: { label: "1" } },
   { id: "2", position: { x: 300, y: 400 }, data: { label: "2" } },
@@ -26,10 +27,61 @@ const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
 const getNodeId = () => `randomnode_${+new Date()}`;
 
 function Flow({ socket, flowId }: { socket: any; flowId: string }) {
-  const [nodes, setNodes] = useNodesState(initialNodes);
-  const [edges, setEdges] = useEdgesState(initialEdges);
+  const [nodes, setNodes] = useNodesState([]);
+  const [edges, setEdges] = useEdgesState([]);
   const [rfInstance, setRfInstance] = useState<any | null>(null);
   const { setViewport } = useReactFlow();
+  const debouncedSave = useCallback(
+    debounce(async (flowData) => {
+      try {
+        const response = await fetch(
+          "http://localhost:3001/flows/save/" + flowId,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              data: flowData,
+            }),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+      console.log("Debounced API call:", flowData);
+    }, 1000),
+    [flowId]
+  );
+  const getData = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/flows/getFlow/" + flowId,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (response.ok) {
+        const savedFlow = await response.json();
+        if (savedFlow !== null) {
+          const flow = JSON.parse(savedFlow.flow.data);
+
+          if (flow) {
+            const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+            setNodes(flow.nodes || []);
+            setEdges(flow.edges || []);
+            setViewport({ x, y, zoom });
+          }
+        }
+      } else {
+        throw new Error("Error while fetching flow");
+      }
+    } catch (error) {
+      console.log("Error while fetching flow");
+    }
+  };
+  useEffect(() => {
+    getData();
+  }, [flowId]);
 
   useEffect(() => {
     if (socket == null) {
@@ -73,9 +125,13 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
       if (socket != null) {
         socket.emit("node-changes", changes);
       }
+      if (rfInstance) {
+        const flow = rfInstance.toObject();
+        debouncedSave(JSON.stringify(flow));
+      }
       console.log("Node changes", changes);
     },
-    [setNodes]
+    [setNodes, flowId, rfInstance]
   );
   const onEdgesChange: OnEdgesChange = useCallback(
     (changes: any) => {
@@ -83,9 +139,13 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
       if (socket != null) {
         socket.emit("edge-changes", changes);
       }
+      if (rfInstance) {
+        const flow = rfInstance.toObject();
+        debouncedSave(JSON.stringify(flow));
+      }
       console.log("Edge changes", changes);
     },
-    [setEdges]
+    [setEdges, flowId, rfInstance]
   );
   const onConnect: OnConnect = useCallback(
     (changes: any) => {
@@ -93,8 +153,12 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
       if (socket != null) {
         socket.emit("connection-changes", changes);
       }
+      if (rfInstance) {
+        const flow = rfInstance.toObject();
+        debouncedSave(JSON.stringify(flow));
+      }
     },
-    [setEdges]
+    [setEdges, flowId, rfInstance]
   );
   const onAdd = useCallback(() => {
     const newNode = {
@@ -108,7 +172,11 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
     };
     setNodes((nds) => nds.concat(newNode));
     socket.emit("newnode-changes", newNode);
-  }, [setNodes]);
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      debouncedSave(JSON.stringify(flow));
+    }
+  }, [setNodes, flowId, rfInstance]);
   const udpateNodes = useCallback(
     (id: string, newLabel: string) => {
       setNodes((prevNodes) =>
@@ -124,8 +192,12 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
             : node
         )
       );
+      if (rfInstance) {
+        const flow = rfInstance.toObject();
+        debouncedSave(JSON.stringify(flow));
+      }
     },
-    [setNodes]
+    [setNodes, flowId, rfInstance]
   );
   const updateLabel = ({ id, newLabel }: any) => {
     udpateNodes(id, newLabel);
