@@ -47,7 +47,7 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
       } catch (error) {
         console.log(error);
       }
-      console.log("Debounced API call:", flowData);
+      //console.log("Debounced API call:", flowData);
     }, 1000),
     [flowId]
   );
@@ -80,6 +80,8 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
     }
   };
   useEffect(() => {
+    setNodes([]);
+    setEdges([]);
     getData();
   }, [flowId]);
 

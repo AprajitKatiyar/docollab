@@ -42,7 +42,7 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
       } catch (error) {
         console.log(error);
       }
-      console.log("Debounced API call:", text);
+      //console.log("Debounced API call:", text);
     }, 1000),
     [docId]
   );
@@ -60,7 +60,7 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
     }
   }, []);
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
     try {
       const response = await fetch(
         "http://localhost:3001/docs/getDoc/" + docId,
@@ -71,6 +71,7 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
       );
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
         quill.setContents([{ insert: "\n" }]);
         quill.setContents(JSON.parse(data.doc.data));
       } else {
@@ -79,7 +80,28 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
     } catch (error) {
       console.log("Error while fetching doc");
     }
-  };
+  }, [docId]);
+  // const getData = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       "http://localhost:3001/docs/getDoc/" + docId,
+  //       {
+  //         method: "GET",
+  //         headers: { "Content-Type": "application/json" },
+  //       }
+  //     );
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       console.log(data);
+  //       //quill.setContents([{ insert: "\n" }]);
+  //       //quill.setContents(JSON.parse(data.doc.data));
+  //     } else {
+  //       throw new Error("Error while fetching doc");
+  //     }
+  //   } catch (error) {
+  //     console.log("Error while fetching doc");
+  //   }
+  // };
   useEffect(() => {
     getData();
   }, [docId]);

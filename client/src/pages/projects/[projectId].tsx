@@ -66,7 +66,7 @@ export default function ProjectPage({ projectId }: any) {
     socket.emit("joinProject", projectId);
   }, []);
 
-  console.log(selectedItem);
+  //console.log(selectedItem);
   return (
     <div className="h-full w-full flex flex-col">
       <div className="flex justify-between p-2 bg-gray-100 h-30">
