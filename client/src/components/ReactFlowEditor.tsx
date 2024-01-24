@@ -47,7 +47,6 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
       } catch (error) {
         console.log(error);
       }
-      //console.log("Debounced API call:", flowData);
     }, 1000),
     [flowId]
   );

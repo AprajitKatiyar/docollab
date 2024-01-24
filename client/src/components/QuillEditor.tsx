@@ -42,7 +42,6 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
       } catch (error) {
         console.log(error);
       }
-      //console.log("Debounced API call:", text);
     }, 1000),
     [docId]
   );
@@ -71,40 +70,20 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
       );
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        quill.setContents([{ insert: "\n" }]);
-        quill.setContents(JSON.parse(data.doc.data));
+        if (quill != null) {
+          quill.setContents([{ insert: "\n" }]);
+          quill.setContents(JSON.parse(data.doc.data));
+        }
       } else {
         throw new Error("Error while fetching doc");
       }
     } catch (error) {
       console.log("Error while fetching doc");
     }
-  }, [docId]);
-  // const getData = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       "http://localhost:3001/docs/getDoc/" + docId,
-  //       {
-  //         method: "GET",
-  //         headers: { "Content-Type": "application/json" },
-  //       }
-  //     );
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       console.log(data);
-  //       //quill.setContents([{ insert: "\n" }]);
-  //       //quill.setContents(JSON.parse(data.doc.data));
-  //     } else {
-  //       throw new Error("Error while fetching doc");
-  //     }
-  //   } catch (error) {
-  //     console.log("Error while fetching doc");
-  //   }
-  // };
+  }, [quill, docId]);
   useEffect(() => {
     getData();
-  }, [docId]);
+  }, [quill, docId]);
 
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -114,7 +93,6 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
       socket.emit("doc-changes", delta);
       console.log(quill.getContents());
       debouncedSave(JSON.stringify(quill.getContents()));
-      //console.log("pasrsed", JSON.parse(JSON.stringify(quill.getContents())));
     };
 
     quill && quill.on("text-change", handleChange);
