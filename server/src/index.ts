@@ -182,6 +182,25 @@ app.post("/projects/createFlow", async (req, res) => {
     });
   }
 });
+app.get("/projects/getAllSlides/:projectId", async (req, res) => {
+  const { projectId } = req.params;
+  try {
+    const docs = await prisma.doc.findMany({
+      where: {
+        projectId: projectId,
+      },
+    });
+    const flows = await prisma.flow.findMany({
+      where: {
+        projectId: projectId,
+      },
+    });
+    res.json({ docs, flows });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 app.put("/docs/save/:docId", async (req, res) => {
   try {
     const { docId } = req.params;

@@ -20,6 +20,31 @@ interface Slide {
   order: number;
   data: string;
 }
+type Doc = {
+  id: string;
+  name: string | null;
+  order: number;
+  data: string;
+  createdAt: string;
+  updatedAt: string;
+  projectId: string;
+};
+type Flow = {
+  id: string;
+  name: string | null;
+  order: number;
+  data: string;
+  createdAt: string;
+  updatedAt: string;
+  projectId: string;
+};
+type ProjectPageProps = {
+  projectId: string;
+  data: {
+    docs: Doc[];
+    flows: Flow[];
+  };
+};
 const fetchedSlides: Slide[] = [
   {
     id: "1",
@@ -55,8 +80,9 @@ const toolbarOptions = [
 
   ["clean"], // remove formatting button
 ];
-export default function ProjectPage({ projectId }: any) {
+export default function ProjectPage({ projectId, data }: ProjectPageProps) {
   //console.log(projectId);
+  console.log("slides", data);
   const [slides, setSlides] = useState<Slide[]>(fetchedSlides);
   const [selectedItem, setSelectedItem] = useState<Slide>(slides[0]);
   const [socket, setSocket] = useState<any | null>(null);
@@ -163,9 +189,24 @@ export default function ProjectPage({ projectId }: any) {
 export async function getServerSideProps(context: any) {
   const { params } = context;
   const { projectId } = params;
+  let data: { docs: Doc[]; flows: Flow[] } | null = null;
+  try {
+    const response = await fetch(
+      "http://localhost:3001/projects/getAllSlides/" + projectId,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    data = await response.json();
+  } catch (error) {
+    console.log(error);
+  }
+
   return {
     props: {
       projectId,
+      data,
     },
   };
 }
