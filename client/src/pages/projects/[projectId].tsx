@@ -15,7 +15,7 @@ enum SlideType {
 }
 interface Slide {
   id: string;
-  name: string;
+  name: string | null;
   type: SlideType;
   order: number;
   data: string;
@@ -40,10 +40,7 @@ type Flow = {
 };
 type ProjectPageProps = {
   projectId: string;
-  data: {
-    docs: Doc[];
-    flows: Flow[];
-  };
+  orderedSlides: Slide[];
 };
 const fetchedSlides: Slide[] = [
   {
@@ -80,11 +77,21 @@ const toolbarOptions = [
 
   ["clean"], // remove formatting button
 ];
-export default function ProjectPage({ projectId, data }: ProjectPageProps) {
+export default function ProjectPage({
+  projectId,
+  orderedSlides,
+}: ProjectPageProps) {
   //console.log(projectId);
-  console.log("slides", data);
-  const [slides, setSlides] = useState<Slide[]>(fetchedSlides);
-  const [selectedItem, setSelectedItem] = useState<Slide>(slides[0]);
+  console.log("slides", orderedSlides);
+  const [slides, setSlides] = useState<Slide[]>(orderedSlides);
+  const [selectedItem, setSelectedItem] = useState<Slide | null>(
+    slides.length != 0 ? slides[0] : null
+  );
+  useEffect(() => {
+    if (slides.length > 0) {
+      setSelectedItem(slides[slides.length - 1]);
+    }
+  }, [slides]);
   const [socket, setSocket] = useState<any | null>(null);
   useEffect(() => {
     const socket = io("http://localhost:3001");
@@ -157,31 +164,38 @@ export default function ProjectPage({ projectId, data }: ProjectPageProps) {
           />
         </div>
       </div>
-      <div className="h-full w-full grid grid-cols-8">
-        <div className="col-span-1 w-full p-4 overflow-y-auto">
-          {slides.map((item) => (
-            <div
-              className={`w-full h-40 mb-4 border-2 rounded-lg hover:border-4 
+      {!selectedItem && (
+        <div className="h-full w-full flex items-center justify-center">
+          Add a new doc or flow.
+        </div>
+      )}
+      {selectedItem && (
+        <div className="h-full w-full grid grid-cols-8">
+          <div className="col-span-1 w-full p-4 overflow-y-auto">
+            {slides.map((item) => (
+              <div
+                className={`w-full h-40 mb-4 border-2 rounded-lg hover:border-4 
             ${selectedItem.id === item.id ? "border-[#8F48EB] border-4 " : ""}
             ${selectedItem.id !== item.id ? "hover:border-gray-300 " : ""}`}
-              key={item.id}
-              onClick={() => {
-                setSelectedItem(item);
-              }}
-            ></div>
-          ))}
+                key={item.id}
+                onClick={() => {
+                  setSelectedItem(item);
+                }}
+              ></div>
+            ))}
+          </div>
+          {selectedItem.type == SlideType.Doc && (
+            <div className="col-span-7 h-full ">
+              <QuillEditor socket={socket} docId={selectedItem.id} />
+            </div>
+          )}
+          {selectedItem.type == SlideType.Flow && (
+            <div className="col-span-7 h-full ">
+              <ReactFlowEditor socket={socket} flowId={selectedItem.id} />
+            </div>
+          )}
         </div>
-        {selectedItem.type == SlideType.Doc && (
-          <div className="col-span-7 h-full ">
-            <QuillEditor socket={socket} docId={selectedItem.id} />
-          </div>
-        )}
-        {selectedItem.type == SlideType.Flow && (
-          <div className="col-span-7 h-full ">
-            <ReactFlowEditor socket={socket} flowId={selectedItem.id} />
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
@@ -190,6 +204,7 @@ export async function getServerSideProps(context: any) {
   const { params } = context;
   const { projectId } = params;
   let data: { docs: Doc[]; flows: Flow[] } | null = null;
+  let orderedSlides: Slide[] = [];
   try {
     const response = await fetch(
       "http://localhost:3001/projects/getAllSlides/" + projectId,
@@ -199,6 +214,25 @@ export async function getServerSideProps(context: any) {
       }
     );
     data = await response.json();
+    if (data) {
+      orderedSlides = data.docs.map((doc) => ({
+        id: doc.id,
+        name: doc.name,
+        type: SlideType.Doc,
+        order: doc.order,
+        data: doc.data,
+      }));
+      orderedSlides = orderedSlides.concat(
+        data.flows.map((flow) => ({
+          id: flow.id,
+          name: flow.name,
+          type: SlideType.Flow,
+          order: flow.order,
+          data: flow.data,
+        }))
+      );
+      orderedSlides.sort((a, b) => a.order - b.order);
+    }
   } catch (error) {
     console.log(error);
   }
@@ -206,7 +240,7 @@ export async function getServerSideProps(context: any) {
   return {
     props: {
       projectId,
-      data,
+      orderedSlides,
     },
   };
 }
