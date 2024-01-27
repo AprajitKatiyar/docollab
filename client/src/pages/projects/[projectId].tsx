@@ -42,47 +42,14 @@ type ProjectPageProps = {
   projectId: string;
   orderedSlides: Slide[];
 };
-const fetchedSlides: Slide[] = [
-  {
-    id: "1",
-    name: "First",
-    type: SlideType.Doc,
-    order: 1,
-    data: "ddfvd",
-  },
-  {
-    id: "2",
-    name: "First",
-    type: SlideType.Flow,
-    order: 2,
-    data: "ydtjtyj",
-  },
-];
-const toolbarOptions = [
-  ["bold", "italic", "underline", "strike"], // toggled buttons
-  ["blockquote", "code-block"],
-
-  [{ header: 1 }, { header: 2 }], // custom button values
-  [{ list: "ordered" }, { list: "bullet" }],
-  [{ script: "sub" }, { script: "super" }], // superscript/subscript
-  [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-  [{ direction: "rtl" }], // text direction
-
-  [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-  [{ header: [1, 2, 3, 4, 5, 6, false] }],
-
-  [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-  [{ font: [] }],
-  [{ align: [] }],
-
-  ["clean"], // remove formatting button
-];
 export default function ProjectPage({
   projectId,
   orderedSlides,
 }: ProjectPageProps) {
   //console.log(projectId);
   console.log("slides", orderedSlides);
+  const dragItem = useRef<any>(null);
+  const dragOverItem = useRef<any>(null);
   const [slides, setSlides] = useState<Slide[]>(orderedSlides);
   const [selectedItem, setSelectedItem] = useState<Slide | null>(
     slides.length != 0 ? slides[0] : null
@@ -91,6 +58,7 @@ export default function ProjectPage({
     if (slides.length > 0) {
       setSelectedItem(slides[slides.length - 1]);
     }
+    console.log("slides", slides);
   }, [slides]);
   const [socket, setSocket] = useState<any | null>(null);
   useEffect(() => {
@@ -98,6 +66,15 @@ export default function ProjectPage({
     setSocket(socket);
     socket.emit("joinProject", projectId);
   }, []);
+
+  const handleSort = () => {
+    let _slides = [...slides];
+    const draggedItemContent = _slides.splice(dragItem.current, 1)[0];
+    _slides.splice(dragOverItem.current, 0, draggedItemContent);
+    dragItem.current = null;
+    dragOverItem.current = null;
+    setSlides(_slides);
+  };
 
   //console.log(selectedItem);
   return (
@@ -172,15 +149,23 @@ export default function ProjectPage({
       {selectedItem && (
         <div className="h-full w-full grid grid-cols-8">
           <div className="col-span-1 w-full p-4 overflow-y-auto">
-            {slides.map((item) => (
+            {slides.map((item, index) => (
               <div
-                className={`w-full h-40 mb-4 border-2 rounded-lg hover:border-4 
+                className={`w-full h-40 mb-4 border-2 rounded-lg hover:border-4
             ${selectedItem.id === item.id ? "border-[#8F48EB] border-4 " : ""}
             ${selectedItem.id !== item.id ? "hover:border-gray-300 " : ""}`}
-                key={item.id}
+                key={index}
                 onClick={() => {
                   setSelectedItem(item);
                 }}
+                draggable
+                onDragStart={(e) => {
+                  dragItem.current = index;
+                  setSelectedItem(slides[index]);
+                }}
+                onDragEnter={(e) => (dragOverItem.current = index)}
+                onDragEnd={handleSort}
+                onDragOver={(e) => e.preventDefault()}
               ></div>
             ))}
           </div>
