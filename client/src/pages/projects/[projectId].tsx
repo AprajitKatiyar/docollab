@@ -54,12 +54,6 @@ export default function ProjectPage({
   const [selectedItem, setSelectedItem] = useState<Slide | null>(
     slides.length != 0 ? slides[0] : null
   );
-  useEffect(() => {
-    if (slides.length > 0) {
-      setSelectedItem(slides[slides.length - 1]);
-    }
-    console.log("slides", slides);
-  }, [slides]);
   const [socket, setSocket] = useState<any | null>(null);
   useEffect(() => {
     const socket = io("http://localhost:3001");
@@ -71,9 +65,21 @@ export default function ProjectPage({
     let _slides = [...slides];
     const draggedItemContent = _slides.splice(dragItem.current, 1)[0];
     _slides.splice(dragOverItem.current, 0, draggedItemContent);
+    for (var i = 0; i < _slides.length; i++) _slides[i].order = i + 1;
+
+    setSlides(_slides);
+    setSelectedItem(_slides[dragOverItem.current]);
     dragItem.current = null;
     dragOverItem.current = null;
+  };
+
+  const updateOrder = (newSlide: Slide) => {
+    let _slides = [...slides];
+    if (newSlide.order == slides.length + 1) _slides.push(newSlide);
+    else _slides.splice(newSlide.order - 1, 0, newSlide);
+    for (var i = 0; i < _slides.length; i++) _slides[i].order = i + 1;
     setSlides(_slides);
+    setSelectedItem(newSlide);
   };
 
   //console.log(selectedItem);
@@ -90,7 +96,7 @@ export default function ProjectPage({
                     method: "POST",
                     body: JSON.stringify({
                       projectId: projectId,
-                      order: slides.length + 1,
+                      order: selectedItem == null ? 1 : selectedItem.order + 1,
                       data: "",
                     }),
                     headers: { "Content-Type": "application/json" },
@@ -105,7 +111,7 @@ export default function ProjectPage({
                   order: doc.order,
                   data: doc.data,
                 };
-                setSlides((oldSlides) => [...oldSlides, newDocSlide]);
+                updateOrder(newDocSlide);
               } catch (error) {
                 console.log(error);
               }
@@ -118,7 +124,7 @@ export default function ProjectPage({
                     method: "POST",
                     body: JSON.stringify({
                       projectId: projectId,
-                      order: slides.length + 1,
+                      order: selectedItem == null ? 1 : selectedItem.order + 1,
                       data: "",
                     }),
                     headers: { "Content-Type": "application/json" },
@@ -133,7 +139,7 @@ export default function ProjectPage({
                   order: flow.order,
                   data: flow.data,
                 };
-                setSlides((oldSlides) => [...oldSlides, newFlowSlide]);
+                updateOrder(newFlowSlide);
               } catch (error) {
                 console.log(error);
               }
@@ -166,7 +172,9 @@ export default function ProjectPage({
                 onDragEnter={(e) => (dragOverItem.current = index)}
                 onDragEnd={handleSort}
                 onDragOver={(e) => e.preventDefault()}
-              ></div>
+              >
+                {item.order}
+              </div>
             ))}
           </div>
           {selectedItem.type == SlideType.Doc && (
