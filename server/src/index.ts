@@ -201,6 +201,30 @@ app.get("/projects/getAllSlides/:projectId", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+app.put("/projects/updateSlides", async (req, res) => {
+  const { slides } = req.body;
+  try {
+    await prisma.$transaction(async (tx) => {
+      for (const slide of slides) {
+        if (slide.type == 0) {
+          await tx.doc.update({
+            where: { id: slide.id },
+            data: { order: slide.order },
+          });
+        } else if (slide.type == 1) {
+          await tx.flow.update({
+            where: { id: slide.id },
+            data: { order: slide.order },
+          });
+        }
+      }
+    });
+    res.json({ message: "Order updated successfully" });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 app.put("/docs/save/:docId", async (req, res) => {
   try {
     const { docId } = req.params;
