@@ -47,10 +47,12 @@ export default function ProjectPage({
   orderedSlides,
 }: ProjectPageProps) {
   //console.log(projectId);
-  console.log("slides", orderedSlides);
+  //console.log("slides", orderedSlides);
   const dragItem = useRef<any>(null);
   const dragOverItem = useRef<any>(null);
   const [slides, setSlides] = useState<Slide[]>(orderedSlides);
+  console.log("slides", slides);
+
   const [selectedItem, setSelectedItem] = useState<Slide | null>(
     slides.length != 0 ? slides[0] : null
   );
@@ -60,8 +62,26 @@ export default function ProjectPage({
     setSocket(socket);
     socket.emit("joinProject", projectId);
   }, []);
+  const saveOrder = async (slides: Slide[]) => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/projects/updateSlides",
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            slides: slides,
+          }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const handleSort = () => {
+  const handleSort = async () => {
     let _slides = [...slides];
     const draggedItemContent = _slides.splice(dragItem.current, 1)[0];
     _slides.splice(dragOverItem.current, 0, draggedItemContent);
@@ -71,15 +91,17 @@ export default function ProjectPage({
     setSelectedItem(_slides[dragOverItem.current]);
     dragItem.current = null;
     dragOverItem.current = null;
+    await saveOrder(_slides);
   };
 
-  const updateOrder = (newSlide: Slide) => {
+  const updateOrder = async (newSlide: Slide) => {
     let _slides = [...slides];
     if (newSlide.order == slides.length + 1) _slides.push(newSlide);
     else _slides.splice(newSlide.order - 1, 0, newSlide);
     for (var i = 0; i < _slides.length; i++) _slides[i].order = i + 1;
     setSlides(_slides);
     setSelectedItem(newSlide);
+    await saveOrder(_slides);
   };
 
   //console.log(selectedItem);
@@ -111,7 +133,7 @@ export default function ProjectPage({
                   order: doc.order,
                   data: doc.data,
                 };
-                updateOrder(newDocSlide);
+                await updateOrder(newDocSlide);
               } catch (error) {
                 console.log(error);
               }
@@ -139,7 +161,7 @@ export default function ProjectPage({
                   order: flow.order,
                   data: flow.data,
                 };
-                updateOrder(newFlowSlide);
+                await updateOrder(newFlowSlide);
               } catch (error) {
                 console.log(error);
               }
