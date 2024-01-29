@@ -88,20 +88,27 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
     if (socket == null) {
       return;
     }
-    const handleNodeChanges = (changes: any) => {
-      setNodes((oldNodes) => applyNodeChanges(changes, oldNodes));
+    const handleNodeChanges = (changes: any, receivedFlowId: string) => {
+      if (receivedFlowId == flowId)
+        setNodes((oldNodes) => applyNodeChanges(changes, oldNodes));
     };
-    const handleEdgeChanges = (changes: any) => {
-      setEdges((oldEdges) => applyEdgeChanges(changes, oldEdges));
+    const handleEdgeChanges = (changes: any, receivedFlowId: string) => {
+      if (receivedFlowId == flowId)
+        setEdges((oldEdges) => applyEdgeChanges(changes, oldEdges));
     };
-    const handleConnectionChanges = (changes: any) => {
-      setEdges((oldEdges) => addEdge(changes, oldEdges));
+    const handleConnectionChanges = (changes: any, receivedFlowId: string) => {
+      if (receivedFlowId == flowId)
+        setEdges((oldEdges) => addEdge(changes, oldEdges));
     };
-    const handleNewNodeChanges = (newNode: any) => {
-      setNodes((nodes) => nodes.concat(newNode));
+    const handleNewNodeChanges = (newNode: any, receivedFlowId: string) => {
+      if (receivedFlowId == flowId) setNodes((nodes) => nodes.concat(newNode));
     };
-    const handeNodeLabelChanges = (id: string, newLabel: string) => {
-      udpateNodes(id, newLabel);
+    const handeNodeLabelChanges = (
+      id: string,
+      newLabel: string,
+      receivedFlowId: string
+    ) => {
+      if (receivedFlowId == flowId) udpateNodes(id, newLabel);
     };
 
     socket && socket.on("receive-node-changes", handleNodeChanges);
@@ -118,13 +125,13 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
       socket && socket.off("receive-newnode-changes", handleNewNodeChanges);
       socket && socket.off("receive-nodelabel-changes", handeNodeLabelChanges);
     };
-  }, [socket]);
+  }, [socket, flowId]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes: any) => {
       setNodes((oldNodes) => applyNodeChanges(changes, oldNodes));
       if (socket != null) {
-        socket.emit("node-changes", changes);
+        socket.emit("node-changes", changes, flowId);
       }
       if (rfInstance) {
         const flow = rfInstance.toObject();
@@ -138,7 +145,7 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
     (changes: any) => {
       setEdges((oldEdges) => applyEdgeChanges(changes, oldEdges));
       if (socket != null) {
-        socket.emit("edge-changes", changes);
+        socket.emit("edge-changes", changes, flowId);
       }
       if (rfInstance) {
         const flow = rfInstance.toObject();
@@ -152,7 +159,7 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
     (changes: any) => {
       setEdges((oldEdges) => addEdge(changes, oldEdges));
       if (socket != null) {
-        socket.emit("connection-changes", changes);
+        socket.emit("connection-changes", changes, flowId);
       }
       if (rfInstance) {
         const flow = rfInstance.toObject();
@@ -172,7 +179,7 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
       },
     };
     setNodes((nds) => nds.concat(newNode));
-    socket.emit("newnode-changes", newNode);
+    socket.emit("newnode-changes", newNode, flowId);
     if (rfInstance) {
       const flow = rfInstance.toObject();
       debouncedSave(JSON.stringify(flow));
@@ -203,14 +210,14 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
   const updateLabel = ({ id, newLabel }: any) => {
     udpateNodes(id, newLabel);
     if (socket && socket.connected) {
-      socket.emit("nodelabel-changes", id, newLabel);
+      socket.emit("nodelabel-changes", id, newLabel, flowId);
     }
   };
   const nodeTypes = useMemo(() => {
     return {
       custom: (props: any) => <TextNode {...props} updateLabel={updateLabel} />,
     };
-  }, []);
+  }, [flowId]);
   const onSave = useCallback(() => {
     if (rfInstance) {
       const flow = rfInstance.toObject();
