@@ -90,7 +90,7 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
 
     const handleChange = (delta: any, oldDelta: any, source: any) => {
       if (source !== "user") return;
-      socket.emit("doc-changes", delta);
+      socket.emit("doc-changes", delta, docId);
       console.log(quill.getContents());
       debouncedSave(JSON.stringify(quill.getContents()));
     };
@@ -104,8 +104,8 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
   useEffect(() => {
     if (socket == null || quill == null) return;
 
-    const handleChange = (delta: any) => {
-      quill.updateContents(delta);
+    const handleChange = (delta: any, receivedDocId: string) => {
+      if (receivedDocId == docId) quill.updateContents(delta);
     };
     socket && socket?.on("receive-doc-changes", handleChange);
 
