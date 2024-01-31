@@ -13,7 +13,7 @@ enum SlideType {
   "Doc",
   "Flow",
 }
-interface Slide {
+export interface Slide {
   id: string;
   name: string | null;
   type: SlideType;
@@ -50,6 +50,7 @@ export default function ProjectPage({
   //console.log("slides", orderedSlides);
   const dragItem = useRef<any>(null);
   const dragOverItem = useRef<any>(null);
+  const slideUnderPreviewId = useRef<any>(null);
   const [slides, setSlides] = useState<Slide[]>(orderedSlides);
   console.log("slides", slides);
 
