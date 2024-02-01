@@ -38,7 +38,7 @@ CREATE TABLE "Doc" (
     "data" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "projectId" TEXT,
+    "projectId" TEXT NOT NULL,
 
     CONSTRAINT "Doc_pkey" PRIMARY KEY ("id")
 );
@@ -51,7 +51,7 @@ CREATE TABLE "Flow" (
     "data" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "projectId" TEXT,
+    "projectId" TEXT NOT NULL,
 
     CONSTRAINT "Flow_pkey" PRIMARY KEY ("id")
 );
