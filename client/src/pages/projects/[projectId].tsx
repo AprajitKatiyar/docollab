@@ -9,6 +9,7 @@ import { io } from "socket.io-client";
 import QuillEditor from "@/components/QuillEditor";
 import ReactFlowEditor from "@/components/ReactFlowEditor";
 import { stringify } from "querystring";
+import DocPreview from "@/components/DocPreview";
 enum SlideType {
   "Doc",
   "Flow",
@@ -179,25 +180,20 @@ export default function ProjectPage({
         <div className="h-full w-full grid grid-cols-8">
           <div className="col-span-1 w-full p-4 overflow-y-auto">
             {slides.map((item, index) => (
-              <div
-                className={`w-full h-40 mb-4 border-2 rounded-lg hover:border-4
-            ${selectedItem.id === item.id ? "border-[#8F48EB] border-4 " : ""}
-            ${selectedItem.id !== item.id ? "hover:border-gray-300 " : ""}`}
+              <DocPreview
                 key={index}
+                item={item}
+                isSelected={selectedItem.id == item.id}
                 onClick={() => {
                   setSelectedItem(item);
                 }}
-                draggable
                 onDragStart={(e) => {
                   dragItem.current = index;
                   setSelectedItem(slides[index]);
                 }}
                 onDragEnter={(e) => (dragOverItem.current = index)}
                 onDragEnd={handleSort}
-                onDragOver={(e) => e.preventDefault()}
-              >
-                {item.order}
-              </div>
+              />
             ))}
           </div>
           {selectedItem.type == SlideType.Doc && (
