@@ -184,6 +184,7 @@ export default function ProjectPage({
                 key={index}
                 item={item}
                 isSelected={selectedItem.id == item.id}
+                socket={socket}
                 onClick={() => {
                   setSelectedItem(item);
                 }}
