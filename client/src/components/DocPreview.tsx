@@ -26,7 +26,9 @@ const DocPreview = ({
   useEffect(() => {
     if (typeof window !== "undefined") {
       import("quill").then(({ default: Quill }) => {
-        const quill = new Quill(editorRef.current!);
+        const quill = new Quill(editorRef.current!, {
+          readOnly: true,
+        });
         setQuill(quill);
         //console.log("Doc preview Quill instance:", quill);
       });
@@ -58,7 +60,7 @@ const DocPreview = ({
       <div
         className={`col-span-7 border-2 rounded-lg hover:border-4
     ${isSelected ? "border-[#8F48EB] border-4 " : ""}
-    ${!isSelected ? "hover:border-gray-300 " : ""}`}
+    ${!isSelected ? "hover:border-gray-300 " : ""} pointer-events-none`}
       >
         <div ref={editorRef} className="h-full " />
       </div>
