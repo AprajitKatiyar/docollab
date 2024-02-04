@@ -34,16 +34,41 @@ const DocPreview = ({
       });
     }
   }, []);
+  const getData = useCallback(async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/docs/getDoc/" + item.id,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (quill != null) {
+          quill.setContents([{ insert: "\n" }]);
+          quill.setContents(JSON.parse(data.doc.data));
+        }
+      } else {
+        throw new Error("Error while fetching doc");
+      }
+    } catch (error) {
+      console.log("Error while fetching doc");
+    }
+  }, [quill, item]);
+  useEffect(() => {
+    getData();
+  }, [quill, item]);
   useEffect(() => {
     //if (socket == null || quill == null) return;
     const handleChange = (delta: any, receivedDocId: string) => {
       console.log(delta);
       if (receivedDocId == item.id) quill.updateContents(delta);
     };
-    socket && socket.on("receive-doc-changes", handleChange);
+    socket && socket.on("receive-doc-preview-changes", handleChange);
 
     return () => {
-      socket && socket.off("receive-doc-changes", handleChange);
+      socket && socket.off("receive-doc-preview-changes", handleChange);
     };
   }, [quill, socket, item]);
   return (
@@ -60,9 +85,14 @@ const DocPreview = ({
       <div
         className={`col-span-7 border-2 rounded-lg hover:border-4
     ${isSelected ? "border-[#8F48EB] border-4 " : ""}
-    ${!isSelected ? "hover:border-gray-300 " : ""} pointer-events-none`}
+    ${
+      !isSelected ? "hover:border-gray-300 " : ""
+    } pointer-events-none overflow-hidden`}
       >
-        <div ref={editorRef} className="h-full " />
+        <div
+          ref={editorRef}
+          className="h-full w-full bg-white transform scale-75"
+        />
       </div>
     </div>
   );
