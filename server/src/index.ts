@@ -329,6 +329,6 @@ io.on("connection", (socket) => {
 
     //register event handlers
     flowManager.addFlowHandlers(socket, projectId);
-    docManager.addDocHandlers(socket, projectId);
+    docManager.addDocHandlers(socket, projectId,io);
   });
 });
