@@ -328,7 +328,7 @@ io.on("connection", (socket) => {
     console.log(`Socket ${socket.id} joined project ${projectId}`);
 
     //register event handlers
-    flowManager.addFlowHandlers(socket, projectId);
+    flowManager.addFlowHandlers(socket, projectId,io);
     docManager.addDocHandlers(socket, projectId,io);
   });
 });

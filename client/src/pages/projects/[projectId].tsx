@@ -10,6 +10,7 @@ import QuillEditor from "@/components/QuillEditor";
 import ReactFlowEditor from "@/components/ReactFlowEditor";
 import { stringify } from "querystring";
 import DocPreview from "@/components/DocPreview";
+import FlowPreview from "@/components/FlowPreview";
 enum SlideType {
   "Doc",
   "Flow",
@@ -179,23 +180,41 @@ export default function ProjectPage({
       {selectedItem && (
         <div className="h-full w-full grid grid-cols-8">
           <div className="col-span-1 w-full p-4 overflow-y-auto">
-            {slides.map((item, index) => (
-              <DocPreview
-                key={index}
-                item={item}
-                isSelected={selectedItem.id == item.id}
-                socket={socket}
-                onClick={() => {
-                  setSelectedItem(item);
-                }}
-                onDragStart={(e) => {
-                  dragItem.current = index;
-                  setSelectedItem(slides[index]);
-                }}
-                onDragEnter={(e) => (dragOverItem.current = index)}
-                onDragEnd={handleSort}
-              />
-            ))}
+            {slides.map((item, index) =>
+              item.type == SlideType.Doc ? (
+                <DocPreview
+                  key={index}
+                  item={item}
+                  isSelected={selectedItem.id == item.id}
+                  socket={socket}
+                  onClick={() => {
+                    setSelectedItem(item);
+                  }}
+                  onDragStart={(e) => {
+                    dragItem.current = index;
+                    setSelectedItem(slides[index]);
+                  }}
+                  onDragEnter={(e) => (dragOverItem.current = index)}
+                  onDragEnd={handleSort}
+                />
+              ) : (
+                <FlowPreview
+                  key={index}
+                  item={item}
+                  isSelected={selectedItem.id == item.id}
+                  socket={socket}
+                  onClick={() => {
+                    setSelectedItem(item);
+                  }}
+                  onDragStart={(e) => {
+                    dragItem.current = index;
+                    setSelectedItem(slides[index]);
+                  }}
+                  onDragEnter={(e) => (dragOverItem.current = index)}
+                  onDragEnd={handleSort}
+                />
+              )
+            )}
           </div>
           {selectedItem.type == SlideType.Doc && (
             <div className="col-span-7 h-full ">

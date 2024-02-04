@@ -19,11 +19,6 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { debounce } from "lodash";
-const initialNodes = [
-  { id: "1", position: { x: 300, y: 200 }, data: { label: "1" } },
-  { id: "2", position: { x: 300, y: 400 }, data: { label: "2" } },
-];
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
 const getNodeId = () => `randomnode_${+new Date()}`;
 
 function Flow({ socket, flowId }: { socket: any; flowId: string }) {
@@ -218,30 +213,6 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
       custom: (props: any) => <TextNode {...props} updateLabel={updateLabel} />,
     };
   }, [flowId]);
-  const onSave = useCallback(() => {
-    if (rfInstance) {
-      const flow = rfInstance.toObject();
-      localStorage.setItem("save", JSON.stringify(flow));
-    }
-  }, [rfInstance]);
-  const onRestore = useCallback(() => {
-    const restoreFlow = async () => {
-      const savedFlow = localStorage.getItem("save");
-
-      if (savedFlow !== null) {
-        const flow = JSON.parse(savedFlow);
-
-        if (flow) {
-          const { x = 0, y = 0, zoom = 1 } = flow.viewport;
-          setNodes(flow.nodes || []);
-          setEdges(flow.edges || []);
-          setViewport({ x, y, zoom });
-        }
-      }
-    };
-
-    restoreFlow();
-  }, [setNodes, setEdges, setViewport]);
   return (
     <ReactFlow
       nodes={nodes}
@@ -259,8 +230,6 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
         >
           <IoMdAdd size="40" />
         </button>
-        <button onClick={onSave}>Save</button>
-        <button onClick={onRestore}>Restore</button>
       </Panel>
       <Controls />
       <MiniMap />
