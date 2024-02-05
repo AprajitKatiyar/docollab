@@ -139,18 +139,11 @@ function Flow({
             : node
         )
       );
-      //   if (rfInstance) {
-      //     const flow = rfInstance.toObject();
-      //     debouncedSave(JSON.stringify(flow));
-      //   }
     },
     [setNodes, item, rfInstance]
   );
   const updateLabel = ({ id, newLabel }: any) => {
     udpateNodes(id, newLabel);
-    // if (socket && socket.connected) {
-    //   socket.emit("nodelabel-changes", id, newLabel, flowId);
-    // }
   };
   const nodeTypes = useMemo(() => {
     return {

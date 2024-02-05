@@ -48,8 +48,6 @@ export default function ProjectPage({
   projectId,
   orderedSlides,
 }: ProjectPageProps) {
-  //console.log(projectId);
-  //console.log("slides", orderedSlides);
   const dragItem = useRef<any>(null);
   const dragOverItem = useRef<any>(null);
   const slideUnderPreviewId = useRef<any>(null);
@@ -107,7 +105,6 @@ export default function ProjectPage({
     await saveOrder(_slides);
   };
 
-  //console.log(selectedItem);
   return (
     <div className="h-full w-full flex flex-col">
       <div className="flex justify-between p-2 bg-gray-100 h-30">

@@ -30,7 +30,6 @@ const DocPreview = ({
           readOnly: true,
         });
         setQuill(quill);
-        //console.log("Doc preview Quill instance:", quill);
       });
     }
   }, []);
@@ -60,7 +59,6 @@ const DocPreview = ({
     getData();
   }, [quill, item]);
   useEffect(() => {
-    //if (socket == null || quill == null) return;
     const handleChange = (delta: any, receivedDocId: string) => {
       console.log(delta);
       if (receivedDocId == item.id) quill.updateContents(delta);
