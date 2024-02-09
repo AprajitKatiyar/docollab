@@ -1,6 +1,4 @@
-import { loadStaticPaths } from "next/dist/server/dev/static-paths-worker";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Quill } from "react-quill";
 import { debounce } from "lodash";
 
 const toolbarOptions = [
