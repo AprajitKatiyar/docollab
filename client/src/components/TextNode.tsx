@@ -12,7 +12,7 @@ function TextNode({ data, id, updateLabel }: any) {
     setValue(data.label);
   }, [data]);
   return (
-    <div>
+    <div className="flex justify-center content-center shadow-md rounded-md border-2">
       <input type="text" value={value} onChange={handleInputChange} />
     </div>
   );
