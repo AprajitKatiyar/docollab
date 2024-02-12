@@ -23,12 +23,12 @@ function TextNode({ data, id, updateLabel }: any) {
       <Handle
         type="source"
         position={Position.Left}
-        className="w-16 !bg-teal-500"
+        className="h-4 bg-[#8F48EB]"
       />
       <Handle
         type="target"
         position={Position.Right}
-        className="w-16 !bg-teal-500"
+        className="h-4 bg-[#8F48EB]"
       />
     </div>
   );
