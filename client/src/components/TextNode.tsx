@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
 
 function TextNode({ data, id, updateLabel }: any) {
