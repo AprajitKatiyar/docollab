@@ -1,6 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { getServerSession } from "next-auth/next";
+import React, { useState } from "react";
 import { MdOutlineSubject } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { useSession, signOut } from "next-auth/react";
