@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Quill } from "react-quill";
-import { debounce } from "lodash";
 import { Slide } from "@/pages/projects/[projectId]";
 
 type DocPreviewProps = {
