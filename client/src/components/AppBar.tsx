@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { MdOutlineSubject } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function AppBar() {
   const [isDown, setIsDown] = useState(false);
   const session = useSession();
   const data = session.data;
+  const router = useRouter();
+
   const handleLogout = () => {
     signOut();
   };
@@ -14,7 +17,12 @@ export default function AppBar() {
 
   return (
     <div className="flex justify-between p-4  z-50 w-full">
-      <div className="flex justify-start items-center">
+      <div
+        className="flex justify-start items-center"
+        onClick={() => {
+          router.push("/");
+        }}
+      >
         <MdOutlineSubject size="25" color="#8F48EB" />
         <h1 className="text-xl font-extrabold ml-2 select-none">Do.Collab.</h1>
       </div>
