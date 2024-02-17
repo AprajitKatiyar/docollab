@@ -70,10 +70,20 @@ export default function AppBar() {
         )}
         {!data && (
           <div className="flex">
-            <button className="mr-3 border-collapse text-lg font-bold">
+            <button
+              className="mr-3 border-collapse text-lg font-bold"
+              onClick={() => {
+                router.push("/auth/signin");
+              }}
+            >
               Login
             </button>
-            <button className="border-collapse text-lg font-bold  text-[#8F48EB]">
+            <button
+              className="border-collapse text-lg font-bold  text-[#8F48EB]"
+              onClick={() => {
+                router.push("/auth/signup");
+              }}
+            >
               SignUp
             </button>
           </div>
