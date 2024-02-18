@@ -3,8 +3,6 @@ import { Slide } from "@/pages/projects/[projectId]";
 import TextNode from "./TextNode";
 import ReactFlow, {
   ReactFlowProvider,
-  MiniMap,
-  Controls,
   Background,
   useNodesState,
   useEdgesState,
@@ -12,10 +10,6 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges,
   useReactFlow,
-  Panel,
-  OnNodesChange,
-  OnEdgesChange,
-  OnConnect,
 } from "reactflow";
 import "reactflow/dist/style.css";
 type FlowPreviewProps = {
