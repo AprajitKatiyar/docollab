@@ -1,14 +1,10 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
 import AddNewSlide from "@/components/AddNewSlide";
-import { type } from "os";
-import dynamic from "next/dynamic";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 
 import QuillEditor from "@/components/QuillEditor";
 import ReactFlowEditor from "@/components/ReactFlowEditor";
-import { stringify } from "querystring";
 import DocPreview from "@/components/DocPreview";
 import FlowPreview from "@/components/FlowPreview";
 enum SlideType {
