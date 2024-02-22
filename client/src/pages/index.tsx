@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { getServerSession } from "next-auth/next";
