@@ -13,7 +13,9 @@ export default function AppBar() {
   const handleLogout = () => {
     signOut();
   };
-  const handleCreate = () => {};
+  const handleCreate = () => {
+    router.push("/projects/create");
+  };
 
   return (
     <div className="flex justify-between p-4  z-50 w-full">
