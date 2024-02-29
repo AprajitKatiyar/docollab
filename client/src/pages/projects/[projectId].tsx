@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import AddNewSlide from "@/components/AddNewSlide";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
