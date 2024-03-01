@@ -48,7 +48,6 @@ export default function ProjectPage({
   const dragOverItem = useRef<any>(null);
   const slideUnderPreviewId = useRef<any>(null);
   const [slides, setSlides] = useState<Slide[]>(orderedSlides);
-  console.log("slides", slides);
 
   const [selectedItem, setSelectedItem] = useState<Slide | null>(
     slides.length != 0 ? slides[0] : null
@@ -72,7 +71,6 @@ export default function ProjectPage({
         }
       );
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
