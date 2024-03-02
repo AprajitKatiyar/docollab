@@ -73,8 +73,8 @@ export default function Home({ data }: { data?: UserData }) {
         <div className="relative w-60 left-36 top-10">
           <h1 className="text-2xl font-bold">Seamless Integration</h1>
           <p className="py-2 text-gray-600">
-            Combine the power of realtime collaborative document editing and
-            flow creation all in one platform.
+            Seamlessly switch between document editing with rich text
+            capabilities and visual flowchart creation, all in real-time.
           </p>
         </div>
       </div>
@@ -82,8 +82,9 @@ export default function Home({ data }: { data?: UserData }) {
         <div className="relative w-60 right-36 top-10">
           <h1 className="text-2xl font-bold">Interactive Widgets</h1>
           <p className="py-2 text-gray-600">
-            Combine the power of realtime collaborative document editing and
-            flow creation all in one platform.
+            Stay connected with your team, share ideas, and bring concepts to
+            life effortlessly. Experience fluid teamwork with our intuitive
+            interface and robust collaboration features.
           </p>
         </div>
       </div>
