@@ -7,7 +7,6 @@ import { User } from "@/recoil/atoms/user";
 export default function Create() {
   const user: User = useRecoilValue(userState);
   useEffect(() => {
-    console.log("Saefwsef");
     console.log("user:", user);
   }, []);
 

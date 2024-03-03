@@ -18,7 +18,6 @@ export default function SignIn() {
     if (res?.ok) {
       router.push("/");
     }
-    console.log(res);
   };
 
   return (
