@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import AddNewSlide from "@/components/AddNewSlide";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 import QuillEditor from "@/components/QuillEditor";
 import ReactFlowEditor from "@/components/ReactFlowEditor";
@@ -224,11 +226,45 @@ export default function ProjectPage({
 }
 
 export async function getServerSideProps(context: any) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/auth/signin",
+        permanent: false,
+      },
+    };
+  } else {
+    var user = session.user;
+  }
   const { params } = context;
   const { projectId } = params;
   let data: { docs: Doc[]; flows: Flow[] } | null = null;
   let orderedSlides: Slide[] = [];
   try {
+    const userResponse = await fetch(
+      "http://localhost:3001/users/" + user?.email,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    const userData = await userResponse.json();
+    console.log("project page user", userData);
+
+    const projectUserResponse = await fetch(
+      "http://localhost:3001/projects/addProjectUser/" + projectId,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          userId: userData.user.id,
+        }),
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    const projectUserData = await projectUserResponse.json();
+    console.log("projectuserdata", projectUserData);
     const response = await fetch(
       "http://localhost:3001/projects/getAllSlides/" + projectId,
       {

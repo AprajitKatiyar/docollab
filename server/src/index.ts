@@ -138,6 +138,43 @@ app.post("/projects/createProject", async (req, res) => {
     });
   }
 });
+app.post("/projects/addProjectUser/:projectId", async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+    const { userId } = req.body;
+
+    const existingProjectUser = await prisma.projectsUsers.findFirst({
+      where: {
+        projectId,
+        userId,
+      },
+    });
+    if (existingProjectUser) {
+      return res.json({
+        message: "User is already associated with this project.",
+        projectUserDetail: existingProjectUser,
+      });
+    }
+
+    const projectUserDetail = await prisma.projectsUsers.create({
+      data: {
+        userId,
+        projectId,
+        isOwner: false,
+      },
+    });
+    if (projectUserDetail)
+      res.json({
+        message: "User successfully associated with this project.",
+        projectUserDetail: projectUserDetail,
+      });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
 app.post("/projects/createDoc", async (req, res) => {
   try {
     const { projectId, order, data } = req.body;
@@ -328,7 +365,7 @@ io.on("connection", (socket) => {
     console.log(`Socket ${socket.id} joined project ${projectId}`);
 
     //register event handlers
-    flowManager.addFlowHandlers(socket, projectId,io);
-    docManager.addDocHandlers(socket, projectId,io);
+    flowManager.addFlowHandlers(socket, projectId, io);
+    docManager.addDocHandlers(socket, projectId, io);
   });
 });
