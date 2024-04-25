@@ -38,18 +38,27 @@ type Flow = {
   updatedAt: string;
   projectId: string;
 };
-type ProjectPageProps = {
+type Project = {
   projectId: string;
+  userId: string;
+  name: string;
+  isShareable: boolean;
+  isOwner: boolean;
+};
+type ProjectPageProps = {
+  projectUserData: { message: string; project: Project };
   orderedSlides: Slide[];
 };
 export default function ProjectPage({
-  projectId,
+  projectUserData,
   orderedSlides,
 }: ProjectPageProps) {
   const dragItem = useRef<any>(null);
   const dragOverItem = useRef<any>(null);
   const slideUnderPreviewId = useRef<any>(null);
   const [slides, setSlides] = useState<Slide[]>(orderedSlides);
+  const [project, setProject] = useState<Project>(projectUserData.project);
+  const [projectName, setProjectName] = useState<string>(project.name);
 
   const [selectedItem, setSelectedItem] = useState<Slide | null>(
     slides.length != 0 ? slides[0] : null
@@ -58,7 +67,7 @@ export default function ProjectPage({
   useEffect(() => {
     const socket = io("http://localhost:3001");
     setSocket(socket);
-    socket.emit("joinProject", projectId);
+    socket.emit("joinProject", project.projectId);
   }, []);
   const saveOrder = async (slides: Slide[]) => {
     try {
@@ -101,10 +110,14 @@ export default function ProjectPage({
     await saveOrder(_slides);
   };
 
+  const handleNameInputLostFocus = async()=>{
+    
+  }
+
   return (
     <div className="h-full w-full flex flex-col">
       <div className="flex justify-between p-2 bg-gray-100 h-30">
-        <div className="w-40">
+        <div className="flex justify-evenly w-152 items-center">
           <AddNewSlide
             handleNewDoc={async () => {
               try {
@@ -113,7 +126,7 @@ export default function ProjectPage({
                   {
                     method: "POST",
                     body: JSON.stringify({
-                      projectId: projectId,
+                      projectId: project.projectId,
                       order: selectedItem == null ? 1 : selectedItem.order + 1,
                       data: "",
                     }),
@@ -141,7 +154,7 @@ export default function ProjectPage({
                   {
                     method: "POST",
                     body: JSON.stringify({
-                      projectId: projectId,
+                      projectId: project.projectId,
                       order: selectedItem == null ? 1 : selectedItem.order + 1,
                       data: "",
                     }),
@@ -162,6 +175,13 @@ export default function ProjectPage({
                 console.log(error);
               }
             }}
+          />
+          <input
+            className="focus:outline-none focus:outline-1 focus:outline-black pl-1 py-1 text-left ml-5 bg-transparent rounded-sm"
+            type="text"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            onBlur={handleNameInputLostFocus}
           />
         </div>
       </div>
@@ -242,6 +262,7 @@ export async function getServerSideProps(context: any) {
   const { projectId } = params;
   let data: { docs: Doc[]; flows: Flow[] } | null = null;
   let orderedSlides: Slide[] = [];
+  var projectUserData;
   try {
     const userResponse = await fetch(
       "http://localhost:3001/users/" + user?.email,
@@ -263,7 +284,7 @@ export async function getServerSideProps(context: any) {
         headers: { "Content-Type": "application/json" },
       }
     );
-    const projectUserData = await projectUserResponse.json();
+    projectUserData = await projectUserResponse.json();
     console.log("projectuserdata", projectUserData);
     const response = await fetch(
       "http://localhost:3001/projects/getAllSlides/" + projectId,
@@ -298,7 +319,7 @@ export async function getServerSideProps(context: any) {
 
   return {
     props: {
-      projectId,
+      projectUserData,
       orderedSlides,
     },
   };

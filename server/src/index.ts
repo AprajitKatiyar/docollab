@@ -142,6 +142,11 @@ app.post("/projects/addProjectUser/:projectId", async (req, res) => {
   try {
     const projectId = req.params.projectId;
     const { userId } = req.body;
+    const project = await prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
 
     const existingProjectUser = await prisma.projectsUsers.findFirst({
       where: {
@@ -149,10 +154,17 @@ app.post("/projects/addProjectUser/:projectId", async (req, res) => {
         userId,
       },
     });
+
     if (existingProjectUser) {
       return res.json({
         message: "User is already associated with this project.",
-        projectUserDetail: existingProjectUser,
+        project: {
+          projectId: project?.id,
+          userId: existingProjectUser.userId,
+          name: project?.name,
+          isOwner: existingProjectUser.isOwner,
+          isShareable: project?.isShareable,
+        },
       });
     }
 
@@ -166,7 +178,13 @@ app.post("/projects/addProjectUser/:projectId", async (req, res) => {
     if (projectUserDetail)
       res.json({
         message: "User successfully associated with this project.",
-        projectUserDetail: projectUserDetail,
+        project: {
+          projectId: project?.id,
+          userId: projectUserDetail.userId,
+          name: project?.name,
+          isOwner: projectUserDetail.isOwner,
+          isShareable: project?.isShareable,
+        },
       });
   } catch (error: any) {
     console.log(error.message);
