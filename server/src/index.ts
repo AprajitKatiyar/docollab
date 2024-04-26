@@ -5,6 +5,7 @@ import prisma from "../prisma/client";
 import { IoManager } from "./managers/IoManager";
 import { FlowManager } from "./managers/FlowManager";
 import { DocManager } from "./managers/DocManager";
+import { ProjectManager } from "./managers/ProjectManager";
 
 const app = express();
 const port = 3001;
@@ -193,6 +194,27 @@ app.post("/projects/addProjectUser/:projectId", async (req, res) => {
     });
   }
 });
+
+app.put("/projects/saveProject/", async (req, res) => {
+  try {
+    const { projectData } = req.body;
+
+    const project = await prisma.project.update({
+      where: { id: projectData.projectId },
+      data: {
+        name: projectData.name,
+        isShareable: projectData.isShareable,
+      },
+    });
+
+    res.json({ message: "Project has been updated sucessfully", project });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
 app.post("/projects/createDoc", async (req, res) => {
   try {
     const { projectId, order, data } = req.body;
@@ -374,6 +396,7 @@ export default httpServer;
 const io = IoManager.getIo();
 const flowManager = new FlowManager();
 const docManager = new DocManager();
+const productManager = new ProjectManager();
 io.on("connection", (socket) => {
   console.log("New Connection");
   let projectId: string = "";
@@ -385,5 +408,6 @@ io.on("connection", (socket) => {
     //register event handlers
     flowManager.addFlowHandlers(socket, projectId, io);
     docManager.addDocHandlers(socket, projectId, io);
+    productManager.addProjectHandlers(socket, projectId, io);
   });
 });

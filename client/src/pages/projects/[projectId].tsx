@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import AddNewSlide from "@/components/AddNewSlide";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
-
+import { debounce } from "lodash";
 import QuillEditor from "@/components/QuillEditor";
 import ReactFlowEditor from "@/components/ReactFlowEditor";
 import DocPreview from "@/components/DocPreview";
@@ -109,10 +109,53 @@ export default function ProjectPage({
     setSelectedItem(newSlide);
     await saveOrder(_slides);
   };
+  useEffect(() => {
+    if (socket == null) return;
 
-  const handleNameInputLostFocus = async()=>{
-    
-  }
+    const handleChange = (updatedProject: Project, projectId: string) => {
+      console.log("Client received");
+      if (project.projectId == projectId) {
+        setProject((prevProject) => ({
+          ...prevProject,
+          name: updatedProject.name,
+          isShareable: updatedProject.isShareable,
+        }));
+      }
+    };
+    socket && socket?.on("receive-project-changes", handleChange);
+
+    return () => {
+      socket && socket.off("receive-project-changes", handleChange);
+    };
+  }, [socket]);
+  const debouncedSaveProject = debounce(async (project: Project) => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/projects/saveProject/",
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            projectData: project,
+          }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const updatedProject = await response.json();
+      socket.emit("project-changes", updatedProject, project.projectId);
+      console.log("Updated project", updatedProject);
+    } catch (error) {
+      console.log(error);
+    }
+  }, 1000);
+
+  const handleNameChange = (e: any) => {
+    const newName = e.target.value;
+    setProject((prevProject) => ({
+      ...prevProject,
+      name: newName,
+    }));
+    debouncedSaveProject({ ...project, name: newName });
+  };
 
   return (
     <div className="h-full w-full flex flex-col">
@@ -179,9 +222,8 @@ export default function ProjectPage({
           <input
             className="focus:outline-none focus:outline-1 focus:outline-black pl-1 py-1 text-left ml-5 bg-transparent rounded-sm"
             type="text"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-            onBlur={handleNameInputLostFocus}
+            value={project.name}
+            onChange={handleNameChange}
           />
         </div>
       </div>
@@ -272,7 +314,7 @@ export async function getServerSideProps(context: any) {
       }
     );
     const userData = await userResponse.json();
-    console.log("project page user", userData);
+    //console.log("project page user", userData);
 
     const projectUserResponse = await fetch(
       "http://localhost:3001/projects/addProjectUser/" + projectId,
@@ -285,7 +327,7 @@ export async function getServerSideProps(context: any) {
       }
     );
     projectUserData = await projectUserResponse.json();
-    console.log("projectuserdata", projectUserData);
+    // console.log("projectuserdata", projectUserData);
     const response = await fetch(
       "http://localhost:3001/projects/getAllSlides/" + projectId,
       {
