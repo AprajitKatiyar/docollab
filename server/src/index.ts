@@ -312,11 +312,18 @@ app.put("/docs/save/:docId", async (req, res) => {
         data: data,
       },
     });
-    if (updatedDoc)
+    if (updatedDoc) {
+      await prisma.project.update({
+        where: { id: updatedDoc.id },
+        data: {
+          updatedAt: updatedDoc.updatedAt,
+        },
+      });
       res.json({
         message: "Doc saved successfully",
         updatedDoc: updatedDoc,
       });
+    }
   } catch (error: any) {
     console.log(error.message);
     res.status(500).json({
@@ -355,11 +362,18 @@ app.put("/flows/save/:flowId", async (req, res) => {
         data: data,
       },
     });
-    if (updatedFlow)
+    if (updatedFlow) {
+      await prisma.project.update({
+        where: { id: updatedFlow.projectId },
+        data: {
+          updatedAt: updatedFlow.updatedAt,
+        },
+      });
       res.json({
         message: "Flow saved successfully",
         updatedFlow: updatedFlow,
       });
+    }
   } catch (error: any) {
     console.log(error.message);
     res.status(500).json({
