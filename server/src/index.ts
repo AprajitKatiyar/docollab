@@ -302,6 +302,29 @@ app.put("/projects/updateSlides", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+app.get("/projects/getAllProjects", async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const allProjects = await prisma.projectsUsers.findMany({
+      where: { userId },
+      include: {
+        project: {
+          select: {
+            name: true,
+            isShareable: true,
+            updatedAt: true,
+          },
+        },
+      },
+    });
+    if (allProjects) {
+      res.json({ message: "Fetched all projects successfully", allProjects });
+    }
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 app.put("/docs/save/:docId", async (req, res) => {
   try {
     const { docId } = req.params;
