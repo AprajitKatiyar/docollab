@@ -302,7 +302,7 @@ app.put("/projects/updateSlides", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.get("/projects/getAllProjects", async (req, res) => {
+app.put("/projects/getAllProjects", async (req, res) => {
   const { userId } = req.body;
   try {
     const allProjects = await prisma.projectsUsers.findMany({
