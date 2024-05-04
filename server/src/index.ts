@@ -15,7 +15,7 @@ app.use(express.json());
 const httpServer = http.createServer(app);
 
 app.get("/", (req, res) => {
-  res.send("Hi from the backend server!");
+  res.send("This is the backend server talking!");
 });
 
 app.post("/auth/signup", async (req, res) => {
