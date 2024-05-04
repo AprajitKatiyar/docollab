@@ -65,14 +65,14 @@ export default function ProjectPage({
   );
   const [socket, setSocket] = useState<any | null>(null);
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`);
     setSocket(socket);
     socket.emit("joinProject", project.projectId);
   }, []);
   const saveOrder = async (slides: Slide[]) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/projects/updateSlides",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/updateSlides`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -131,7 +131,7 @@ export default function ProjectPage({
   const debouncedSaveProject = debounce(async (project: Project) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/projects/saveProject/",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/saveProject/`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -165,7 +165,7 @@ export default function ProjectPage({
             handleNewDoc={async () => {
               try {
                 const response = await fetch(
-                  "http://localhost:3001/projects/createDoc",
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/createDoc`,
                   {
                     method: "POST",
                     body: JSON.stringify({
@@ -193,7 +193,7 @@ export default function ProjectPage({
             handleNewFlow={async () => {
               try {
                 const response = await fetch(
-                  "http://localhost:3001/projects/createFlow",
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/createFlow`,
                   {
                     method: "POST",
                     body: JSON.stringify({
@@ -307,7 +307,7 @@ export async function getServerSideProps(context: any) {
   var projectUserData;
   try {
     const userResponse = await fetch(
-      "http://localhost:3001/users/" + user?.email,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${user?.email}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -317,7 +317,7 @@ export async function getServerSideProps(context: any) {
     //console.log("project page user", userData);
 
     const projectUserResponse = await fetch(
-      "http://localhost:3001/projects/addProjectUser/" + projectId,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/addProjectUser/${projectId}`,
       {
         method: "POST",
         body: JSON.stringify({
@@ -329,7 +329,7 @@ export async function getServerSideProps(context: any) {
     projectUserData = await projectUserResponse.json();
     // console.log("projectuserdata", projectUserData);
     const response = await fetch(
-      "http://localhost:3001/projects/getAllSlides/" + projectId,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/getAllSlides/${projectId}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },

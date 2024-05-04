@@ -103,10 +103,13 @@ export async function getServerSideProps(context: any) {
       },
     };
   try {
-    const response = await fetch("http://localhost:3001/users/" + user?.email, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${user?.email}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
     const data = await response.json();
     return {
       props: {

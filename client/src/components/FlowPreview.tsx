@@ -38,7 +38,7 @@ function Flow({
   const getData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/flows/getFlow/" + item.id,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/flows/getFlow/${item.id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },

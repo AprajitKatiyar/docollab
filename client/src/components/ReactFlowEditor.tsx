@@ -30,7 +30,7 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
     debounce(async (flowData) => {
       try {
         const response = await fetch(
-          "http://localhost:3001/flows/save/" + flowId,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/flows/save/${flowId}`,
           {
             method: "PUT",
             body: JSON.stringify({
@@ -48,7 +48,7 @@ function Flow({ socket, flowId }: { socket: any; flowId: string }) {
   const getData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/flows/getFlow/" + flowId,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/flows/getFlow/${flowId}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },

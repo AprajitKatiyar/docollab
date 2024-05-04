@@ -19,14 +19,17 @@ export const authOptions: NextAuthOptions = {
           password: string;
         };
         try {
-          const response = await fetch("http://localhost:3001/auth/login", {
-            method: "POST",
-            body: JSON.stringify({
-              email: email,
-              password: password,
-            }),
-            headers: { "Content-Type": "application/json" },
-          });
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                email: email,
+                password: password,
+              }),
+              headers: { "Content-Type": "application/json" },
+            }
+          );
           if (response.ok) {
             const data = await response.json();
 
@@ -52,15 +55,18 @@ export const authOptions: NextAuthOptions = {
           name: string;
         };
         try {
-          const response = await fetch("http://localhost:3001/auth/signup", {
-            method: "POST",
-            body: JSON.stringify({
-              email: email,
-              password: password,
-              name: name,
-            }),
-            headers: { "Content-Type": "application/json" },
-          });
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                email: email,
+                password: password,
+                name: name,
+              }),
+              headers: { "Content-Type": "application/json" },
+            }
+          );
           if (response.ok) {
             const data = await response.json();
 
@@ -82,7 +88,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }) {
       try {
         const response = await fetch(
-          "http://localhost:3001/auth/saveOauthUser",
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/saveOauthUser`,
           {
             method: "POST",
             body: JSON.stringify({

@@ -28,7 +28,7 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
     debounce(async (text) => {
       try {
         const response = await fetch(
-          "http://localhost:3001/docs/save/" + docId,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/docs/save/${docId}`,
           {
             method: "PUT",
             body: JSON.stringify({
@@ -60,7 +60,7 @@ const QuillEditor = ({ socket, docId }: { socket: any; docId: string }) => {
   const getData = useCallback(async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/docs/getDoc/" + docId,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/docs/getDoc/${docId}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },

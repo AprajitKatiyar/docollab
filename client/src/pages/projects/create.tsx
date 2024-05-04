@@ -47,7 +47,7 @@ export default function Create({
   const handleOnClick = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/projects/createProject",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/createProject`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -123,7 +123,7 @@ export async function getServerSideProps(context: any) {
 
   try {
     const userResponse = await fetch(
-      "http://localhost:3001/users/" + user?.email,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${user?.email}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -131,7 +131,7 @@ export async function getServerSideProps(context: any) {
     );
     const userData = await userResponse.json();
     const allProjects = await fetch(
-      "http://localhost:3001/projects/getAllProjects/",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/getAllProjects/`,
       {
         method: "PUT",
         body: JSON.stringify({

@@ -34,7 +34,7 @@ const DocPreview = ({
   const getData = useCallback(async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/docs/getDoc/" + item.id,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/docs/getDoc/${item.id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
