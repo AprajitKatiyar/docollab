@@ -8,14 +8,14 @@ import { DocManager } from "./managers/DocManager";
 import { ProjectManager } from "./managers/ProjectManager";
 
 const app = express();
-const port = 3001;
+const port = 3000;
 app.use(cors());
 app.use(express.json());
 
 const httpServer = http.createServer(app);
 
 app.get("/", (req, res) => {
-  res.send("Hello from backend server");
+  res.send("Hi from the backend server!");
 });
 
 app.post("/auth/signup", async (req, res) => {
