@@ -87,6 +87,8 @@ Plan. Create. Collaborate.
 - ⚛️ [React](https://reactjs.org/)
 
 - 🎨 [TailwindCSS](https://tailwindcss.com/)
+  
+- 🧘‍♂️ [Socket.Io](https://socket.io/)
 
 - 📚 [Prisma](https://prisma.io/)
 
