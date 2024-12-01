@@ -35,8 +35,8 @@ Plan. Create. Collaborate.
 
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/ffb1967a-18fa-40da-8310-71e7efa53043" alt="GIF 1" width="45%" />
-  <img src="https://github.com/user-attachments/assets/1ae5d952-ae1b-46bd-a905-2b5baf3321ff" alt="GIF 2" width="45%" />
+  <img src="https://github.com/user-attachments/assets/ffb1967a-18fa-40da-8310-71e7efa53043" alt="GIF 1" width="49%" />
+  <img src="https://github.com/user-attachments/assets/1ae5d952-ae1b-46bd-a905-2b5baf3321ff" alt="GIF 2" width="49%" />
 </p>
 <p align="center">
 <img width="90% alt="Flow" src="https://github.com/user-attachments/assets/c57237b2-8e44-43e5-9926-35aa0629f4fa">
